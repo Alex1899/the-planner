@@ -1,0 +1,22 @@
+.option {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding: 20px;
+  padding-left: 20px;
+  margin-bottom: 10px;
+
+  img {
+    width: 25px;
+  }
+
+  .option-label {
+    color: white;
+    margin-left: 15px;
+  }
+
+  &:hover {
+    background-color: lighten($color: #303030, $amount: 10);
+    cursor: pointer;
+  }
+}
