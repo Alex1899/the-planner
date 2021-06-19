@@ -41,12 +41,32 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
 };
 
 export const getCurrentUser = async () => {
-  return await new Promise((resolve, reject) => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+  let promise = new Promise((resolve, reject) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       unsubscribe();
-      resolve(user);
+      let res = null;
+      console.log("user here", user);
+      if (user) {
+        try {
+          const userRef = firestore.doc(`users/${user.uid}`);
+          const snapshot = await userRef.get();
+          res = { id: snapshot.id, ...snapshot.data() };
+        } catch (e) {
+          console.log("Error connecting to firebase");
+          res = {
+            id: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoUrl: user.photoURL,
+          };
+          resolve(res)
+        }
+      }
+      resolve(res);
     }, reject);
   });
+
+  return await promise;
 };
 
 export const signInWithEmail = async ({ email, password }) => {

@@ -5,7 +5,7 @@ const SideBarOption = ({ active, icon, label, onClick }) => {
   return (
     <div className={`option${active ? " active" : ""}`} onClick={onClick}>
       <img src={icon} alt="option icon" />
-      <span className="option-label">{label}</span>
+      <span>{label}</span>
     </div>
   );
 };

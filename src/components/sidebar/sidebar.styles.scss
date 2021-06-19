@@ -1,14 +1,41 @@
 .sidebar {
-  width: 300px;
+  width: 20vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #303030;
+
+  .user-info {
+    display: flex;
+    margin: 10px 0;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .dropdown {
+    background-color: #303030;
+    z-index: 1000;
+    height: 150px;
+    border: 1px solid white;
+    transition: height 2s;
+
+    p {
+      color: white;
+    }
+  }
 
   .active {
     padding-left: 17px;
     border-left: 3px solid white;
     background-color: lighten($color: #303030, $amount: 10);
     transition: border-left 0.5s;
+  }
+
+  span {
+    color: white;
+    margin-left: 15px;
   }
 }

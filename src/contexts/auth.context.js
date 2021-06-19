@@ -1,20 +1,18 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import AlertDialog from "../components/alert-dialog/alert-dialog.component";
-import { auth, getCurrentUser, signInWithEmail } from "../firebase/firebase.utils";
+import { auth, signInWithEmail } from "../firebase/firebase.utils";
 
 const AuthContext = createContext();
 const { Provider } = AuthContext;
 
 const AuthProvider = ({ children }) => {
+  const userInfo = localStorage.getItem("userInfo");
+
   const [alert, setAlert] = useState({ show: false, text: "" });
-  const history = useHistory();
-
-  const [currentUser, setAuthState] = useState(null);
-
-  const setAuthInfo = (user) => {
-    setAuthState({ ...user });
-  };
+  const [currentUser, setCurrentUser] = useState(
+    userInfo ? JSON.parse(userInfo) : null
+  );
 
   //   const updateAvatar = (avatar) => {
   //     let updatedUserInfo = { ...authState.userInfo, avatar };
@@ -22,22 +20,23 @@ const AuthProvider = ({ children }) => {
   //     setAuthState({ ...authState, userInfo: updatedUserInfo });
   //   };
 
-  const loginUser = async ({email, password}) => {
-      let user = await signInWithEmail({email, password})
-      setAuthInfo(user)
-  }
+  const loginUser = async ({ email, password }) => {
+    let user = await signInWithEmail({ email, password });
+    localStorage.setItem("userInfo", JSON.stringify(user));
+    setCurrentUser(user);
+  };
 
   const logout = () => {
     auth.logout();
-    setAuthState(null);
+    localStorage.removeItem("userInfo")
+    setCurrentUser(null);
   };
-
 
   return (
     <Provider
       value={{
         currentUser: currentUser,
-        setAuthState: (user) => setAuthInfo(user),
+        setCurrentUser: (user) => setCurrentUser({ ...user }),
         loginUser,
         logout,
       }}

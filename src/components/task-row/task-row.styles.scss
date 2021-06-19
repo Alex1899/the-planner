@@ -1,0 +1,20 @@
+.task-row {
+  display: flex;
+  align-items: center;
+  background-color: #303030;
+  min-height: 45px;
+  border-radius: 4px;
+  padding-left: 10px;
+  margin-bottom: 2px;
+
+  span{ 
+      color: white;
+  }
+
+  .check-icon {
+      margin-right: 10px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

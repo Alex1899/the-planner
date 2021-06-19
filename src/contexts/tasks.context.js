@@ -23,13 +23,44 @@ const TaskProvider = ({ children }) => {
 
   const updateTasksCategory = (category, updatedTasks) => {
     let tasksCopy = taskData;
-    Object.keys(tasksCopy).forEach((key) => {
+    Object.keys(tasksCopy).some((key) => {
       if (key === category) {
         tasksCopy[key] = updatedTasks;
-        return;
+        return true;
       }
+      return false;
     });
-    setUserTasks(tasksCopy);
+    setUserTasks({ ...tasksCopy });
+  };
+
+  const addTaskToCategory = (category, task) => {
+    let tasksCopy = taskData;
+    Object.keys(tasksCopy).some((key) => {
+      if (key === category) {
+        tasksCopy[key].unshift(task);
+        return true;
+      }
+      return false;
+    });
+    setUserTasks({ ...tasksCopy });
+  };
+
+  const toggleTaskChecked = (category, taskText) => {
+    let tasksCopy = taskData;
+    Object.keys(tasksCopy).some((key) => {
+      if (key === category) {
+        tasksCopy[key].some((task) => {
+          if (task.text === taskText) {
+            task.checked = !task.checked;
+            return true;
+          }
+          return false;
+        });
+        return true;
+      }
+      return false;
+    });
+    setUserTasks({ ...tasksCopy });
   };
 
   return (
@@ -39,6 +70,9 @@ const TaskProvider = ({ children }) => {
         setUserTasks: (tasks) => setUserTasks(tasks),
         updateTasksCategory: (category, updatedTasks) =>
           updateTasksCategory(category, updatedTasks),
+        addTaskToCategory: (category, task) =>
+          addTaskToCategory(category, task),
+        toggleTaskChecked: (category, task) => toggleTaskChecked(category, task),
       }}
     >
       {children}
@@ -46,6 +80,6 @@ const TaskProvider = ({ children }) => {
   );
 };
 
-const useStateValue = () => useContext(TaskContext)
+const useStateValue = () => useContext(TaskContext);
 
-export { TaskProvider, useStateValue}
+export { TaskProvider, useStateValue };
