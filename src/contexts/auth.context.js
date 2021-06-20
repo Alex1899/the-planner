@@ -27,7 +27,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    auth.logout();
+    auth.signOut();
     localStorage.removeItem("userInfo")
     setCurrentUser(null);
   };
@@ -36,7 +36,7 @@ const AuthProvider = ({ children }) => {
     <Provider
       value={{
         currentUser: currentUser,
-        setCurrentUser: (user) => setCurrentUser({ ...user }),
+        setCurrentUser: (user) => setCurrentUser(user),
         loginUser,
         logout,
       }}

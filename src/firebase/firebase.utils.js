@@ -53,13 +53,6 @@ export const getCurrentUser = async () => {
           res = { id: snapshot.id, ...snapshot.data() };
         } catch (e) {
           console.log("Error connecting to firebase");
-          res = {
-            id: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoUrl: user.photoURL,
-          };
-          resolve(res)
         }
       }
       resolve(res);

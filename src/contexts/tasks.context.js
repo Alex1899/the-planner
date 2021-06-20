@@ -63,6 +63,24 @@ const TaskProvider = ({ children }) => {
     setUserTasks({ ...tasksCopy });
   };
 
+  const deleteTask = (category, taskToDelete) => {
+    let tasksCopy = taskData;
+    Object.keys(tasksCopy).some((key) => {
+      if (key === category) {
+        tasksCopy[key].some((task, i) => {
+          if (task.text === taskToDelete) {
+            tasksCopy[key].splice(i, 1)
+            return true;
+          }
+          return false;
+        });
+        return true;
+      }
+      return false;
+    });
+    setUserTasks({ ...tasksCopy });
+  };
+
   return (
     <Provider
       value={{
@@ -72,7 +90,9 @@ const TaskProvider = ({ children }) => {
           updateTasksCategory(category, updatedTasks),
         addTaskToCategory: (category, task) =>
           addTaskToCategory(category, task),
-        toggleTaskChecked: (category, task) => toggleTaskChecked(category, task),
+        toggleTaskChecked: (category, task) =>
+          toggleTaskChecked(category, task),
+        deleteTask: (category, taskToDelete) => deleteTask(category, taskToDelete)
       }}
     >
       {children}

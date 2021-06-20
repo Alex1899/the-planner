@@ -8,16 +8,18 @@ import { useStateValue } from "./contexts/auth.context";
 import { Spinner } from "react-bootstrap";
 import { getCurrentUser } from "./firebase/firebase.utils";
 
+
 function App() {
   const { setCurrentUser, currentUser } = useStateValue();
-  const [showSpinner, toggleShowSpinner] = useState(true);
-
+  const [showSpinner, toggleShowSpinner] = useState(false);
+ 
   useEffect(() => {
-    if (showSpinner && !currentUser) {
+    if (!currentUser) {
+      toggleShowSpinner(true)
       getCurrentUser()
         .then((user) => {
           console.log("fetched user", user);
-          setCurrentUser(user);
+          setCurrentUser((_)=> user);
           toggleShowSpinner(false);
         })
         .catch((e) => {
@@ -25,7 +27,7 @@ function App() {
           toggleShowSpinner(false);
         });
     }
-  }, [setCurrentUser, showSpinner, currentUser]);
+  }, [setCurrentUser, currentUser]);
 
   return (
     <div className="d-flex" style={{ height: "100vh" }}>
@@ -39,7 +41,6 @@ function App() {
       ) : (
         <Switch>
           <Route
-            exact
             path="/"
             render={({ match }) =>
               currentUser ? <HomePage match={match} /> : <SignInAndSignUpPage />

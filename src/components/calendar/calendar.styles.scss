@@ -1,0 +1,12 @@
+@import 'react-big-calendar/lib/sass/styles';
+
+.rbc-calendar{
+    width: 100%;
+
+
+    .rbc-event {
+        display: flex;
+        justify-content: center;
+        background-color: transparent;
+    }
+}

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 import AlertDialog from "../alert-dialog/alert-dialog.component";
-import "./sign-in.styles.scss"
+import { Spinner } from "react-bootstrap";
+import "./sign-in.styles.scss";
 import { useStateValue } from "../../contexts/auth.context";
 
 const SignIn = () => {
   const { loginUser } = useStateValue();
   const [alert, setAlert] = useState({ show: false, text: "" });
+  const [spinner, toggleSpinner] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -15,7 +17,8 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    loginUser({...form })
+    toggleSpinner(!spinner)
+    loginUser({ ...form }).then(toggleSpinner(!spinner));
   };
 
   // const handleGoogleLogin = async (googleData) => {
@@ -50,37 +53,48 @@ const SignIn = () => {
           text={alert.text}
         />
       )}
-      <h2>I already have an account</h2>
-      <span>Sign in with your email and password</span>
+      {spinner ? (
+        <Spinner
+          animation="border"
+          variant="dark"
+          size="lg  "
+          className="m-auto"
+        />
+      ) : (
+        <>
+          <h2>I already have an account</h2>
+          <span>Sign in with your email and password</span>
 
-      <form onSubmit={handleSubmit}>
-        <FormInput
-          name="email"
-          type="email"
-          onChange={handleChange}
-          value={form.email}
-          label="email"
-          required
-        />
-        <FormInput
-          name="password"
-          type="password"
-          value={form.password}
-          onChange={handleChange}
-          label="password"
-          required
-        />
-        <div className="buttons">
-          <CustomButton type="submit"> Sign in </CustomButton>
-          {/* <GoogleLogin
+          <form onSubmit={handleSubmit}>
+            <FormInput
+              name="email"
+              type="email"
+              onChange={handleChange}
+              value={form.email}
+              label="email"
+              required
+            />
+            <FormInput
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              label="password"
+              required
+            />
+            <div className="buttons">
+              <CustomButton type="submit"> Sign in </CustomButton>
+              {/* <GoogleLogin
             clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
             buttonText="Log in with Google"
             onSuccess={handleGoogleLogin}
             onFailure={handleGoogleLogin}
             cookiePolicy="single_host_origin" 
           />*/}
-        </div>
-      </form>
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };
