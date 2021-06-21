@@ -1,13 +1,13 @@
 import React from "react";
-import { useStateValue } from "../../contexts/tasks.context";
+import { useTasksState } from "../../contexts/tasks.context";
 import "./task-row.styles.scss";
 
 const Task = ({ task }) => {
   const { checked, text } = task;
-  const { toggleTaskChecked } = useStateValue();
+  const { toggleTaskChecked } = useTasksState();
 
   const completeTask = () => {
-    toggleTaskChecked("myday", text);
+    toggleTaskChecked(text);
   };
 
   return (

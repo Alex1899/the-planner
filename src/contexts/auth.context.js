@@ -20,15 +20,22 @@ const AuthProvider = ({ children }) => {
   //     setAuthState({ ...authState, userInfo: updatedUserInfo });
   //   };
 
+  const setUser = (user) => {
+    if (user) {
+      localStorage.setItem("userInfo", JSON.stringify(user));
+    }
+    setCurrentUser((_) => user);
+  };
+
   const loginUser = async ({ email, password }) => {
     let user = await signInWithEmail({ email, password });
-    localStorage.setItem("userInfo", JSON.stringify(user));
-    setCurrentUser(user);
+    console.log("fetched user from firebase");
+    setUser(user);
   };
 
   const logout = () => {
     auth.signOut();
-    localStorage.removeItem("userInfo")
+    localStorage.removeItem("userInfo");
     setCurrentUser(null);
   };
 
@@ -36,7 +43,7 @@ const AuthProvider = ({ children }) => {
     <Provider
       value={{
         currentUser: currentUser,
-        setCurrentUser: (user) => setCurrentUser(user),
+        setUser: (user) => setUser(user),
         loginUser,
         logout,
       }}

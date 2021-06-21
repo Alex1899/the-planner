@@ -12,11 +12,11 @@ import { AuthProvider } from "./contexts/auth.context";
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <TaskProvider>
+      <TaskProvider>
+        <AuthProvider>
           <App />
-        </TaskProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </TaskProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")

@@ -20,6 +20,8 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
   const userRef = firestore.doc(`users/${userAuth.uid}`);
+  const tasksCollection = firestore.collection("tasks");
+
   const snapShot = await userRef.get();
 
   if (!snapShot.exists) {
@@ -31,6 +33,10 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
         email,
         createdAt,
         ...additionalData,
+      });
+      await tasksCollection.doc().set({
+        userId: userAuth.uid,
+        tasks: [],
       });
     } catch (error) {
       console.log("error creating user", error.message);
@@ -50,9 +56,10 @@ export const getCurrentUser = async () => {
         try {
           const userRef = firestore.doc(`users/${user.uid}`);
           const snapshot = await userRef.get();
+
           res = { id: snapshot.id, ...snapshot.data() };
         } catch (e) {
-          console.log("Error connecting to firebase");
+          console.log("Error connecting to firebase", e);
         }
       }
       resolve(res);
@@ -68,4 +75,13 @@ export const signInWithEmail = async ({ email, password }) => {
   const userSnapshot = await userRef.get();
 
   return { id: userSnapshot.id, ...userSnapshot.data() };
+};
+
+export const getUserTasks = async (userId) => {
+  const tasks = await firestore
+    .collection("tasks")
+    .where("userId", "==", userId.toString())
+    .get();
+
+  return { tasks: [...tasks.docs[0].data().tasks] };
 };

@@ -1,38 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { useStateValue } from "../../contexts/tasks.context";
+import { useTasksState } from "../../contexts/tasks.context";
 import Message from "../empty-tasks-message/message.component";
 import AddTask from "../add-task/add-task.component";
 import Task from "../task-row/task-row.component";
 
 import "./myday.styles.scss";
 import RightClickMenu from "../context-menu/context-menu.component";
-import { calculateTimeLeft } from "../utils/utils";
+import Timer from "../timer/timer.component";
 
 const MyDay = () => {
-  const {
-    taskData: { myday },
-    deleteTask,
-  } = useStateValue();
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const { taskData, deleteTask } = useTasksState();
+  const [myday, setMyDay] = useState(taskData
+    ? taskData.tasks.filter((task) => task.addedToMyDay)
+    : [])
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-    return () => clearTimeout(timer);
-  });
+
+    useEffect(()=>{
+      console.log("myday rendered")
+    })
 
   return (
     <div
       className="myday-container"
       style={{ backgroundImage: "url(/assets/myday-image.jpg)" }}
     >
-      <div className="title">
+      <header>
         <div className="today">
           <h2>My Day</h2>
           <p className="date">{new Date().toDateString()}</p>
         </div>
-      </div>
+        <Timer myday={myday} setMyDay={()=>setMyDay([])} />
+      </header>
+
       {/* tasks div */}
       <div
         className="tasks-list"
@@ -51,7 +50,7 @@ const MyDay = () => {
                 {
                   label: "Delete",
                   data: { text: task.text },
-                  onClick: (_, data) => deleteTask("myday", data.text),
+                  onClick: (_, data) => deleteTask(data.text),
                   style: { color: "red", fontWeight: "bold" },
                 },
               ]}

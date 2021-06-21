@@ -5,21 +5,25 @@ import { Switch, Route } from "react-router-dom";
 import HomePage from "./pages/home/home.component";
 import SignInAndSignUpPage from "./pages/sign-in-sign-up/sign-in-sign-up.component";
 import { useStateValue } from "./contexts/auth.context";
-import { Spinner } from "react-bootstrap";
-import { getCurrentUser } from "./firebase/firebase.utils";
+import { useTasksState } from "./contexts/tasks.context";
 
+import { Spinner } from "react-bootstrap";
+import { getCurrentUser, getUserTasks } from "./firebase/firebase.utils";
 
 function App() {
-  const { setCurrentUser, currentUser } = useStateValue();
+  const { setUser, currentUser } = useStateValue();
+  const { taskData } = useTasksState();
   const [showSpinner, toggleShowSpinner] = useState(false);
- 
+  const { setUserTasks } = useTasksState();
+
   useEffect(() => {
+    console.log("app rendered");
     if (!currentUser) {
-      toggleShowSpinner(true)
+      toggleShowSpinner(true);
       getCurrentUser()
-        .then((user) => {
-          console.log("fetched user", user);
-          setCurrentUser((_)=> user);
+        .then((res) => {
+          console.log("fetched user", res);
+          setUser(res);
           toggleShowSpinner(false);
         })
         .catch((e) => {
@@ -27,7 +31,13 @@ function App() {
           toggleShowSpinner(false);
         });
     }
-  }, [setCurrentUser, currentUser]);
+  }, [setUser, currentUser]);
+
+  useEffect(() => {
+    if (currentUser && !taskData) {
+      getUserTasks(currentUser.id).then((tasks) => setUserTasks(tasks));
+    }
+  }, [currentUser, setUserTasks, taskData]);
 
   return (
     <div className="d-flex" style={{ height: "100vh" }}>

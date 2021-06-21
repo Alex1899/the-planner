@@ -5,6 +5,8 @@ import AlertDialog from "../alert-dialog/alert-dialog.component";
 import { Spinner } from "react-bootstrap";
 import "./sign-in.styles.scss";
 import { useStateValue } from "../../contexts/auth.context";
+import { getUserTasks } from "../../firebase/firebase.utils";
+import { useTasksState } from "../../contexts/tasks.context";
 
 const SignIn = () => {
   const { loginUser } = useStateValue();
@@ -17,8 +19,9 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    toggleSpinner(!spinner)
-    loginUser({ ...form }).then(toggleSpinner(!spinner));
+    toggleSpinner(!spinner);
+    await loginUser({ ...form });
+    toggleSpinner(!spinner);
   };
 
   // const handleGoogleLogin = async (googleData) => {

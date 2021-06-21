@@ -1,19 +1,21 @@
 import React, { useState } from "react";
-import { useStateValue } from "../../contexts/tasks.context";
+import { useHistory } from "react-router-dom";
+import { useTasksState } from "../../contexts/tasks.context";
 import AlertDialog from "../alert-dialog/alert-dialog.component";
 import "./add-task.styles.scss";
 
 const AddTask = () => {
-  const { addTaskToCategory } = useStateValue();
-  const [task, setTask] = useState({ checked: false, text: "" });
+  const { addTask } = useTasksState();
+  const history = useHistory()
+  const [task, setTask] = useState({ checked: false, text: "", category: "", addedToMyDay: history.location.pathname === "/" ? true: false });
   const [alert, setAlert] = useState({ show: false, text: "" });
 
-  const addTask = () => {
+  const addUserTask = () => {
     if (!task.text) {
       setAlert({ show: true, text: "Task can not be empty" });
       return;
     }
-    addTaskToCategory("myday", task);
+    addTask(task)
     setTask({ ...task, text: "" });
   };
 
@@ -23,7 +25,7 @@ const AddTask = () => {
 
   const onEnterPress = (e) => {
     if (e.key === "Enter") {
-      addTask();
+      addTask(task);
     }
   };
 
@@ -36,7 +38,7 @@ const AddTask = () => {
           text={alert.text}
         />
       )}
-      <img src="/assets/plus.svg" alt="add icon" onClick={() => addTask()} />
+      <img src="/assets/plus.svg" alt="add icon" onClick={() => addUserTask()} />
       <input
         type="text"
         placeholder="Add a task"
@@ -48,4 +50,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default React.memo(AddTask);

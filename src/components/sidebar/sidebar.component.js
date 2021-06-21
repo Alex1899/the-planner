@@ -5,11 +5,12 @@ import SideBarOption from "../sidebar-option/sidebar-option.component";
 // import { Avatar } from "react-bootstrap"
 import { useHistory } from "react-router-dom";
 import { useStateValue } from "../../contexts/auth.context";
+import { Offline } from "react-detect-offline";
 
 const options = [
   { icon: "assets/sun-white.svg", label: "My Day", route: "/" },
   { icon: "assets/star.svg", label: "Important", route: "/important" },
-  { icon: "assets/tasks.svg", label: "Tasks", route: "/all-tasks" },
+  { icon: "assets/tasks.svg", label: "Tasks", route: "/tasks" },
   { icon: "assets/routine.svg", label: "Routine", route: "/routine" },
   { icon: "assets/calendar.svg", label: "Calendar", route: "/calendar" },
 ];
@@ -17,16 +18,15 @@ const options = [
 const activeMap = {
   "/": "My Day",
   "/important": "Important",
-  "/all-tasks": "Tasks",
-  "/routing": "Routine",
-  "/calendar": "Calendar"
+  "/tasks": "Tasks",
+  "/routine": "Routine",
+  "/calendar": "Calendar",
 };
 
 const Sidebar = () => {
   const { currentUser, logout } = useStateValue();
   const history = useHistory();
   const [active, setActive] = useState(activeMap[history.location.pathname]);
-
 
   const handleOptionClick = (label, route) => {
     setActive(label);
@@ -48,6 +48,11 @@ const Sidebar = () => {
           <div className="d-flex flex-column align-items-start">
             <span>{currentUser.displayName}</span>
             <span style={{ fontSize: 12 }}>{currentUser.email}</span>
+
+            <Offline>
+              <img src="/assets/no-wifi.svg" alt="offline icon" />
+              <span style={{ fontSize: 12, marginLeft: 5 }}>Offline</span>
+            </Offline>
           </div>
         </div>
 
