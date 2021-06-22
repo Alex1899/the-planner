@@ -1,44 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useTasksState } from "../../contexts/tasks.context";
-import { calculateTimeLeft } from "../utils/utils";
+import { useTimer } from "react-timer-hook";
+import TimerStyled from "./timer.styled";
+import { tasksNotFinished } from "../utils/utils";
 
-const Timer = ({ myday, setMyDay }) => {
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const { setTodayResult } = useTasksState();
+const Timer = ({ expiryTimestamp, myday }) => {
+  const { clearMyDay, setTodayResult } = useTasksState();
 
-  useEffect(() => {
-    let timer;
-    if (timeLeft) {
-      timer = setTimeout(() => {
-        let time = calculateTimeLeft();
-        if (!time) {
-          let notFinished = myday.some((task) => !task.checked);
-          if (notFinished) {
-            //TODO
-            //update today's result to L
-            setTodayResult("L");
-          } else {
-            //Win
-            setTodayResult("W");
-          }
-        }
-        setTimeLeft(time);
-      }, 1000);
-    } else {
-      if (myday.length > 0) {
-        setMyDay();
+  const { seconds, minutes, hours } = useTimer({
+    expiryTimestamp,
+    onExpire: () => {
+      if(tasksNotFinished(myday)){
+        setTodayResult("L")
+      }else{
+        setTodayResult("W")
       }
-    }
-    return () => clearTimeout(timer);
+      clearMyDay()
+    },
   });
+
   return (
-    <div className="timer">
-      {timeLeft && (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      {myday.length > 0 && (
         <>
-          <h2>Time Left</h2>
-          <p>
-            {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
-          </p>
+          <h2 className="mr-3">Time Left: </h2>
+          <TimerStyled seconds={seconds} minutes={minutes} hours={hours} />
         </>
       )}
     </div>

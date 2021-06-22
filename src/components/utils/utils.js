@@ -1,8 +1,8 @@
 export const calculateTimeLeft = () => {
   const d = new Date();
   const h = d.getHours()
-  const m = d.getMinutes() +30
-  const s = d.getSeconds() -20;
+  const m = d.getMinutes()
+  const s = d.getSeconds()
   const secondsUntilEndOfDay = 24 * 60 * 60 - h * 60 * 60 - m * 60 - s;
 
   if (secondsUntilEndOfDay < 1) {
@@ -21,3 +21,6 @@ export const calculateTimeLeft = () => {
 
   return timeLeft
 };
+
+
+export const tasksNotFinished = (myday) => myday.some(task => !task.checked)

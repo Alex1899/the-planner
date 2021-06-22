@@ -7,17 +7,28 @@ import Task from "../task-row/task-row.component";
 import "./myday.styles.scss";
 import RightClickMenu from "../context-menu/context-menu.component";
 import Timer from "../timer/timer.component";
+import { useStateValue } from "../../contexts/auth.context";
 
 const MyDay = () => {
   const { taskData, deleteTask } = useTasksState();
-  const [myday, setMyDay] = useState(taskData
-    ? taskData.tasks.filter((task) => task.addedToMyDay)
-    : [])
+  const {
+    currentUser: { id },
+  } = useStateValue();
+  const myday =
+    taskData && taskData.tasks.length > 0
+      ? taskData.tasks.filter((task) => task.addedToMyDay)
+      : [];
+  const time = new Date();
+  time.setSeconds(
+    24 * 60 * 60 -
+      time.getHours() * 60 * 60 -
+      time.getMonth() * 60 -
+      time.getSeconds()
+  );
 
-
-    useEffect(()=>{
-      console.log("myday rendered")
-    })
+  useEffect(() => {
+    console.log("myday rendered");
+  });
 
   return (
     <div
@@ -29,7 +40,7 @@ const MyDay = () => {
           <h2>My Day</h2>
           <p className="date">{new Date().toDateString()}</p>
         </div>
-        <Timer myday={myday} setMyDay={()=>setMyDay([])} />
+        <Timer expiryTimestamp={time} myday={myday} />
       </header>
 
       {/* tasks div */}
@@ -49,8 +60,7 @@ const MyDay = () => {
               menuItems={[
                 {
                   label: "Delete",
-                  data: { text: task.text },
-                  onClick: (_, data) => deleteTask(data.text),
+                  onClick: () => deleteTask(id, task),
                   style: { color: "red", fontWeight: "bold" },
                 },
               ]}

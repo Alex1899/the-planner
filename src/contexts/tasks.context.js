@@ -1,4 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
+import {
+  addTaskToFirebase,
+  removeTaskFromFirebase,
+} from "../firebase/firebase.utils";
 
 const TaskContext = createContext();
 const { Provider } = TaskContext;
@@ -26,9 +30,13 @@ const TaskProvider = ({ children }) => {
   //   setUserTasks({ ...tasksCopy });
   // };
 
-  const addTask = (task) => {
+  const addTask = (userId, task) => {
+    console.log("userId", userId);
     console.log("task added", task);
     setUserTasks({ ...taskData, tasks: [task, ...taskData.tasks] });
+    addTaskToFirebase(userId, task)
+      .then(() => console.log("task added to firebase"))
+      .catch((e) => console.log(e));
   };
 
   // const addTaskToMyDay = (task) => {
@@ -57,10 +65,10 @@ const TaskProvider = ({ children }) => {
     setUserTasks({ ...tasksCopy });
   };
 
-  const deleteTask = (taskToDelete) => {
+  const deleteTask = (userId, taskToDelete) => {
     let tasksCopy = taskData;
     tasksCopy.tasks.some((task, i) => {
-      if (task.text === taskToDelete) {
+      if (task.text === taskToDelete.text) {
         tasksCopy.tasks.splice(i, 1);
         return true;
       }
@@ -68,10 +76,22 @@ const TaskProvider = ({ children }) => {
     });
 
     setUserTasks({ ...tasksCopy });
+    removeTaskFromFirebase(userId, taskToDelete)
+      .then(() => console.log("task deleted from firebase"))
+      .catch((e) => console.log(e));
   };
 
   const setTodayResult = (todayResult) => {
     setUserTasks({ ...taskData, todayResult });
+  };
+
+  const clearMyDay = () => {
+    let newTasks = taskData.tasks.forEach((task) => {
+      if (task.addedToMyDay) {
+        task.addedToMyDay = false;
+      }
+    });
+    setUserTasks({ ...taskData, tasks: [...newTasks] });
   };
 
   return (
@@ -80,10 +100,11 @@ const TaskProvider = ({ children }) => {
         taskData: taskData,
         setUserTasks: (tasks) => setUserTasks(tasks),
 
-        addTask: (task) => addTask(task),
+        addTask: (userId, task) => addTask(userId, task),
         toggleTaskChecked: (task) => toggleTaskChecked(task),
-        deleteTask: (taskToDelete) => deleteTask(taskToDelete),
+        deleteTask: (userId, taskToDelete) => deleteTask(userId, taskToDelete),
         setTodayResult: (result) => setTodayResult(result),
+        clearMyDay: () => clearMyDay(),
       }}
     >
       {children}

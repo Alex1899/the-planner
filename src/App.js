@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import Sidebar from "./components/sidebar/sidebar.component";
 import { Switch, Route } from "react-router-dom";
 import HomePage from "./pages/home/home.component";
 import SignInAndSignUpPage from "./pages/sign-in-sign-up/sign-in-sign-up.component";
@@ -34,8 +33,13 @@ function App() {
   }, [setUser, currentUser]);
 
   useEffect(() => {
+    console.log("task fetching useEffect run from App")
     if (currentUser && !taskData) {
-      getUserTasks(currentUser.id).then((tasks) => setUserTasks(tasks));
+      (async () => {
+        let tasks = await getUserTasks(currentUser.id);
+        console.log("tasks fetched from firebase from App", tasks)
+        setUserTasks(tasks);
+      })();
     }
   }, [currentUser, setUserTasks, taskData]);
 

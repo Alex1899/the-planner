@@ -34,8 +34,7 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
         createdAt,
         ...additionalData,
       });
-      await tasksCollection.doc().set({
-        userId: userAuth.uid,
+      await tasksCollection.doc(userAuth.uid).set({
         tasks: [],
       });
     } catch (error) {
@@ -78,10 +77,31 @@ export const signInWithEmail = async ({ email, password }) => {
 };
 
 export const getUserTasks = async (userId) => {
-  const tasks = await firestore
-    .collection("tasks")
-    .where("userId", "==", userId.toString())
-    .get();
+  const ref = firestore.doc(`tasks/${userId}`);
+  let tasks = await ref.get();
+  return tasks.data();
+};
 
-  return { tasks: [...tasks.docs[0].data().tasks] };
+export const saveTodayResult = async (result) => {};
+
+export const addTaskToFirebase = async (userId, task) => {
+  const tasksRef = firestore.doc(`tasks/${userId}`);
+  try {
+    await tasksRef.update({
+      tasks: firebase.firestore.FieldValue.arrayUnion(task),
+    });
+  } catch (e) {
+    console.log("Error adding task to firebase", e);
+  }
+};
+
+export const removeTaskFromFirebase = async (userId, task) => {
+  const tasksRef = firestore.doc(`tasks/${userId}`);
+  try {
+    await tasksRef.update({
+      tasks: firebase.firestore.FieldValue.arrayRemove(task),
+    });
+  } catch (e) {
+    console.log("Error while removing task from firebase", e);
+  }
 };
