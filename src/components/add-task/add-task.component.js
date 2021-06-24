@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useStateValue } from "../../contexts/auth.context";
 import { useTasksState } from "../../contexts/tasks.context";
-import { addTaskToFirebase } from "../../firebase/firebase.utils";
 import AlertDialog from "../alert-dialog/alert-dialog.component";
+
 import "./add-task.styles.scss";
 
 const AddTask = () => {
@@ -25,8 +25,8 @@ const AddTask = () => {
       setAlert({ show: true, text: "Task can not be empty" });
       return;
     }
-    addTask(id,task);
-   
+    addTask(id, task);
+
     setTask({ ...task, text: "" });
   };
 
@@ -36,7 +36,7 @@ const AddTask = () => {
 
   const onEnterPress = (e) => {
     if (e.key === "Enter") {
-      addTask(id,task);
+      addTask(id, task);
       setTask({ ...task, text: "" });
     }
   };
@@ -51,6 +51,7 @@ const AddTask = () => {
         />
       )}
       <img
+        className="plus-image"
         src="/assets/plus.svg"
         alt="add icon"
         onClick={() => addUserTask()}
@@ -66,4 +67,4 @@ const AddTask = () => {
   );
 };
 
-export default React.memo(AddTask);
+export default AddTask;

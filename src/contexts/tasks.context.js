@@ -2,7 +2,10 @@ import React, { createContext, useContext, useState } from "react";
 import {
   addTaskToFirebase,
   removeTaskFromFirebase,
+  saveResultToFirebase,
+  updateTaskInFirebase,
 } from "../firebase/firebase.utils";
+import { v4 as uuidv4 } from "uuid";
 
 const TaskContext = createContext();
 const { Provider } = TaskContext;
@@ -12,10 +15,11 @@ const TaskProvider = ({ children }) => {
   const [taskData, setTaskData] = useState(tasks ? JSON.parse(tasks) : null);
 
   const setUserTasks = (tasks) => {
+    console.log("updating taskdata with:", tasks);
     if (tasks) {
       localStorage.setItem("tasks", JSON.stringify(tasks));
     }
-    setTaskData((_) => tasks);
+    setTaskData((_) => ({ ...tasks }));
   };
 
   // const updateTasksCategory = (category, updatedTasks) => {
@@ -31,9 +35,17 @@ const TaskProvider = ({ children }) => {
   // };
 
   const addTask = (userId, task) => {
-    console.log("userId", userId);
-    console.log("task added", task);
-    setUserTasks({ ...taskData, tasks: [task, ...taskData.tasks] });
+    task.id =  uuidv4()
+
+    let newTaskData = {
+      ...taskData,
+      tasks: [task, ...taskData.tasks],
+    };
+    if (newTaskData.todayResult) {
+      delete newTaskData["todayResult"];
+    }
+
+    setUserTasks(newTaskData);
     addTaskToFirebase(userId, task)
       .then(() => console.log("task added to firebase"))
       .catch((e) => console.log(e));
@@ -51,16 +63,20 @@ const TaskProvider = ({ children }) => {
   //   setUserTasks({ ...tasksCopy });
   // };
 
-  const toggleTaskChecked = (taskText) => {
+  const toggleTaskChecked = (userId, taskId) => {
     let tasksCopy = taskData;
-
+    let update = {};
     tasksCopy.tasks.some((task) => {
-      if (task.text === taskText) {
+      if (task.id === taskId) {
         task.checked = !task.checked;
+        update.fields = { checked: task.checked };
+        update.taskId = task.id;
         return true;
       }
       return false;
     });
+
+    updateTaskInFirebase(userId, update)
 
     setUserTasks({ ...tasksCopy });
   };
@@ -81,17 +97,33 @@ const TaskProvider = ({ children }) => {
       .catch((e) => console.log(e));
   };
 
-  const setTodayResult = (todayResult) => {
-    setUserTasks({ ...taskData, todayResult });
+  const setTodayResult = (userId, { todayResult, tasks }) => {
+    console.log("tasks", tasks);
+    // add to firebase
+    saveResultToFirebase(userId, { todayResult, tasks })
+      .then(() => {
+        console.log("result added to firebase");
+        tasks.forEach(async (task) => {
+          await updateTaskInFirebase(userId, {
+            taskId: task.id,
+            fields: { addedToMyDay: false },
+          });
+        });
+      })
+      .catch((e) => console.log(e));
+
+    let newTasks = clearMyDay();
+    setUserTasks({ ...taskData, tasks: newTasks, result: {todayResult, tasks} });
   };
 
   const clearMyDay = () => {
-    let newTasks = taskData.tasks.forEach((task) => {
+    let newTasks = taskData.tasks;
+    newTasks.forEach((task) => {
       if (task.addedToMyDay) {
         task.addedToMyDay = false;
       }
     });
-    setUserTasks({ ...taskData, tasks: [...newTasks] });
+    return newTasks;
   };
 
   return (
@@ -99,11 +131,10 @@ const TaskProvider = ({ children }) => {
       value={{
         taskData: taskData,
         setUserTasks: (tasks) => setUserTasks(tasks),
-
         addTask: (userId, task) => addTask(userId, task),
-        toggleTaskChecked: (task) => toggleTaskChecked(task),
+        toggleTaskChecked: (userId, taskId) => toggleTaskChecked(userId, taskId),
         deleteTask: (userId, taskToDelete) => deleteTask(userId, taskToDelete),
-        setTodayResult: (result) => setTodayResult(result),
+        setTodayResult: (id, result) => setTodayResult(id, result),
         clearMyDay: () => clearMyDay(),
       }}
     >

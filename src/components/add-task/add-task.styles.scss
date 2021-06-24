@@ -1,29 +1,33 @@
 .add-task {
-    display: flex;
-    backdrop-filter: blur(10px);
-    background-color: rgba(0, 0, 0, 0.5);
-    height: 45px;
-    border-radius: 4px;
-    padding-left: 10px;
-    margin-top: 20px;
-    
+  display: flex;
+  backdrop-filter: blur(10px);
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 45px;
+  border-radius: 4px;
+  padding-left: 10px;
+  margin-top: auto;
+  margin-bottom: 20px;
+
+  img {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  input {
+    margin-left: 10px;
+    background: transparent;
+    color: white;
+    border: none;
+    flex-grow: 1;
+
+    &:active,
+    &:focus {
+      outline: none;
+    }
+  }
+  @media only screen and (max-width: 600px) {
     img {
-        &:hover {
-            cursor: pointer;
-        }
+      width: 25px;
     }
-    input {
-        margin-left: 10px;
-        background: transparent;
-        color: white;
-        border: none;
-        flex-grow: 1;
-        
-
-        &:active, &:focus{
-            outline: none;
-        }
-    }
-
-  
+  }
 }

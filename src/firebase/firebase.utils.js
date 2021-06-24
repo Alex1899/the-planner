@@ -20,8 +20,6 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
   const userRef = firestore.doc(`users/${userAuth.uid}`);
-  const tasksCollection = firestore.collection("tasks");
-
   const snapShot = await userRef.get();
 
   if (!snapShot.exists) {
@@ -33,9 +31,6 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
         email,
         createdAt,
         ...additionalData,
-      });
-      await tasksCollection.doc(userAuth.uid).set({
-        tasks: [],
       });
     } catch (error) {
       console.log("error creating user", error.message);
@@ -77,31 +72,88 @@ export const signInWithEmail = async ({ email, password }) => {
 };
 
 export const getUserTasks = async (userId) => {
-  const ref = firestore.doc(`tasks/${userId}`);
-  let tasks = await ref.get();
-  return tasks.data();
+  const ref = firestore.collection(`users/${userId}/allTasks`);
+  let tasksSnapshot = await ref.get();
+  let allTasks = tasksSnapshot.docs.map((doc) => doc.data());
+  allTasks.length > 0 && console.log(allTasks[0]);
+
+  return { tasks: allTasks };
 };
 
-export const saveTodayResult = async (result) => {};
+// export const saveTodayResult = async (result) => {};
 
 export const addTaskToFirebase = async (userId, task) => {
-  const tasksRef = firestore.doc(`tasks/${userId}`);
+  const userDocRef = firestore.doc(`users/${userId}`);
+
   try {
-    await tasksRef.update({
-      tasks: firebase.firestore.FieldValue.arrayUnion(task),
-    });
+    await userDocRef
+      .collection("allTasks")
+      .doc(task.id)
+      .set({
+        ...task,
+      });
   } catch (e) {
     console.log("Error adding task to firebase", e);
   }
 };
 
 export const removeTaskFromFirebase = async (userId, task) => {
-  const tasksRef = firestore.doc(`tasks/${userId}`);
+  const userRef = firestore.doc(`users/${userId}`);
   try {
-    await tasksRef.update({
-      tasks: firebase.firestore.FieldValue.arrayRemove(task),
-    });
+    await userRef
+      .collection("allTasks")
+      .doc(task.id)
+      .delete()
+      .then(() => {
+        console.log("Task successfully deleted from firebase!");
+      })
+      .catch((error) => {
+        console.error("Error removing document: ", error);
+      });
   } catch (e) {
     console.log("Error while removing task from firebase", e);
   }
 };
+
+export const saveResultToFirebase = async (userId, result) => {
+  const userRef = firestore.doc(`users/${userId}`);
+  try {
+    await userRef
+      .collection("events")
+      .doc()
+      .set({
+        ...result,
+      });
+  } catch (e) {
+    console.log("Error while saving events to firebase", e);
+  }
+};
+
+export const getAllUserEvents = async (userId) => {
+  const eventsCollection = firestore.collection(`users/${userId}/events`);
+
+  try {
+    const eventsSnapshot = await eventsCollection.get();
+    let allEvents = eventsSnapshot.docs.map((doc) => doc.data());
+
+    return { events: allEvents };
+  } catch (e) {
+    console.log("Error getting events from firebase", e);
+    return {};
+  }
+};
+
+export const updateTaskInFirebase = async (userId, update) => {
+  const tasksRef = firestore.doc(`users/${userId}/allTasks/${update.taskId}`);
+  try {
+    await tasksRef.update({
+      ...update.fields,
+    });
+    console.log("updated task " + update.taskId);
+  } catch (e) {
+    console.log("Error updating task in firebase", e);
+    return {};
+  }
+};
+
+// export const getEventTasks = async (userId)

@@ -3,10 +3,24 @@
 .rbc-calendar{
     width: 100%;
 
+    .rbc-selected, .rbc-row-segment, .rbc-event-content {
+        outline: none !important;
+        border: none !important;
+
+        &:active, &:focus{
+            outline: none !important;
+            border: none !important
+        }
+    }
+
 
     .rbc-event {
         display: flex;
         justify-content: center;
         background-color: transparent;
+        
+        .rbc-event-content {
+            width: 100%;
+        }
     }
 }

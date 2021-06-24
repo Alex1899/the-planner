@@ -15,6 +15,10 @@ const SepartorContainer = styled.span`
   align-items: center;
   align-self: flex-end;
   margin: 0 0 10px 0px;
+
+  @media only screen and (max-width: 600px) {
+    margin: 0;
+  }
 `;
 
 const Separtor = styled.span`

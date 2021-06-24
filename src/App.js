@@ -44,7 +44,7 @@ function App() {
   }, [currentUser, setUserTasks, taskData]);
 
   return (
-    <div className="d-flex" style={{ height: "100vh" }}>
+    <div className="d-flex">
       {showSpinner ? (
         <Spinner
           animation="border"

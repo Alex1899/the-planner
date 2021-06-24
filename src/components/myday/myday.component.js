@@ -3,11 +3,10 @@ import { useTasksState } from "../../contexts/tasks.context";
 import Message from "../empty-tasks-message/message.component";
 import AddTask from "../add-task/add-task.component";
 import Task from "../task-row/task-row.component";
-
-import "./myday.styles.scss";
 import RightClickMenu from "../context-menu/context-menu.component";
 import Timer from "../timer/timer.component";
 import { useStateValue } from "../../contexts/auth.context";
+import "./myday.styles.scss";
 
 const MyDay = () => {
   const { taskData, deleteTask } = useTasksState();
@@ -18,6 +17,7 @@ const MyDay = () => {
     taskData && taskData.tasks.length > 0
       ? taskData.tasks.filter((task) => task.addedToMyDay)
       : [];
+
   const time = new Date();
   time.setSeconds(
     24 * 60 * 60 -
@@ -33,14 +33,21 @@ const MyDay = () => {
   return (
     <div
       className="myday-container"
-      style={{ backgroundImage: "url(/assets/myday-image.jpg)" }}
+      style={{
+        backgroundImage: `url(/assets/myday-image.jpg)`,
+      }}
     >
       <header>
         <div className="today">
-          <h2>My Day</h2>
+          <p className="my-day">My Day</p>
           <p className="date">{new Date().toDateString()}</p>
         </div>
-        <Timer expiryTimestamp={time} myday={myday} />
+        {myday.length > 0 && (
+          <Timer
+            expiryTimestamp={time}
+            myday={myday}
+          />
+        )}
       </header>
 
       {/* tasks div */}

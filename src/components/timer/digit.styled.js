@@ -16,6 +16,11 @@ const Title = styled.span`
   font-weight: bold;
   margin-bottom: 5px;
   margin-top: 5px;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 12px;
+    margin-top: 0;
+  }
 `;
 
 const DigitContainer = styled.div`
@@ -47,6 +52,10 @@ const SingleDigit = styled.span`
     height: 2px;
     background-color: #232323;
     opacity: 0.4;
+  }
+  @media only screen and (max-width: 600px) {
+    font-size: 12px;
+    padding: 5px 6px;
   }
 `;
 
