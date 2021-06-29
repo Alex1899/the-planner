@@ -32,7 +32,7 @@ const MyDay = () => {
     <div
       className="myday-container"
       style={{
-        backgroundImage: `url(/assets/myday-image.jpg)`,
+        backgroundImage: `url(/assets/big-screen-bg.jpg)`,
       }}
     >
       <PageHeader title="My Day" myday={{tasks: myday, time: time}}/>

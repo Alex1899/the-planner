@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import AlertDialog from "../components/alert-dialog/alert-dialog.component";
-import { auth, signInWithEmail } from "../firebase/firebase.utils";
+import { auth, createUserwIthEmailPassword, signInWithEmail } from "../firebase/firebase.utils";
 
 const AuthContext = createContext();
 const { Provider } = AuthContext;
@@ -33,6 +33,12 @@ const AuthProvider = ({ children }) => {
     setUser(user);
   };
 
+  const createUser = async ({email, password}, {displayName}) => {
+    let user = await createUserwIthEmailPassword({email, password}, { displayName})
+    console.log("created user in firebase");
+    setUser(user);
+  }
+
   const logout = () => {
     auth.signOut();
     localStorage.removeItem("userInfo");
@@ -45,6 +51,7 @@ const AuthProvider = ({ children }) => {
         currentUser: currentUser,
         setUser: (user) => setUser(user),
         loginUser,
+        createUser,
         logout,
       }}
     >

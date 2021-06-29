@@ -1,38 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
 import AlertDialog from "../alert-dialog/alert-dialog.component";
 import "./sign-up.styles.scss";
 import { useHistory } from "react-router";
-
+import { useStateValue } from "../../contexts/auth.context";
+import validator from "validator";
 const SignUp = () => {
   const [alert, setAlert] = useState({ show: false, text: "" });
-  const history = useHistory();
+  const { createUser } = useStateValue();
   const [form, setForm] = useState({
-    fullname: "",
-    username: "",
+    displayName: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
-  const { fullname, username, email, password, confirmPassword } = form;
+  const { displayName, email, password, confirmPassword } = form;
+
+  useEffect(() => {
+    return () => {
+      clearForm();
+    };
+  }, []);
 
   const clearForm = () => {
     setForm({
-      fullname: "",
-      username: "",
+      displayName: "",
       email: "",
       password: "",
       confirmPassword: "",
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-
-
+    if (!displayName || !email || !password || !confirmPassword) {
+      setAlert({ show: true, text: "Please fill out all fields" });
+      return;
+    }
+    if (confirmPassword !== password) {
+      setAlert({ show: true, text: "Passwords do not match" });
+      return;
+    }
+    if (!validator.isEmail(email)) {
+      setAlert({ show: true, text: "Please enter correct email" });
+      return;
+    }
+    createUser({ email, password }, { displayName });
   };
 
   const handleChange = (event) => {
@@ -56,18 +71,10 @@ const SignUp = () => {
       <form className="sign-up-form" onSubmit={handleSubmit}>
         <FormInput
           type="text"
-          name="fullname"
-          value={fullname}
+          name="displayName"
+          value={displayName}
           onChange={handleChange}
-          label="Fullname"
-          required
-        />
-        <FormInput
-          type="text"
-          name="username"
-          value={username}
-          onChange={handleChange}
-          label="Username"
+          label="Display Name"
           required
         />
         <FormInput

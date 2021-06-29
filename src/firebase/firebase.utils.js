@@ -16,6 +16,9 @@ firebase.initializeApp(firebaseConfig);
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
+export const googleProvider = new firebase.auth.GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: "select_account" });
+
 export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
 
@@ -27,10 +30,13 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
     const createdAt = new Date();
     try {
       await userRef.set({
-        displayName,
+        displayName: displayName
+          ? displayName
+          : additionalData
+          ? additionalData.displayName
+          : null,
         email,
         createdAt,
-        ...additionalData,
       });
     } catch (error) {
       console.log("error creating user", error.message);
@@ -63,8 +69,28 @@ export const getCurrentUser = async () => {
   return await promise;
 };
 
+export const createUserwIthEmailPassword = async (
+  { email, password },
+  additionalData
+) => {
+  const { user } = await auth.createUserWithEmailAndPassword(email, password);
+  const userRef = await createUserProfileDoc(user, additionalData);
+  const userSnapshot = await userRef.get();
+
+  return { id: userSnapshot.id, ...userSnapshot.data() };
+};
+
 export const signInWithEmail = async ({ email, password }) => {
   const { user } = await auth.signInWithEmailAndPassword(email, password);
+  const userRef = await createUserProfileDoc(user);
+  const userSnapshot = await userRef.get();
+
+  return { id: userSnapshot.id, ...userSnapshot.data() };
+};
+
+export const signInWithGoogle = async () => {
+  const { user } = await auth.signInWithPopup(googleProvider);
+  console.log("google user", user);
   const userRef = await createUserProfileDoc(user);
   const userSnapshot = await userRef.get();
 

@@ -49,7 +49,7 @@ const AllTasks = () => {
         <div
           className="myday-container"
           style={{
-            backgroundImage: `url(/assets/myday-image.jpg)`,
+            backgroundImage: `url(/assets/big-screen-bg.jpg)`,
           }}
         >
           <header>
