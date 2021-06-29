@@ -4,7 +4,7 @@ import { useTimer } from "react-timer-hook";
 import TimerStyled from "./timer.styled";
 import { tasksNotFinished } from "../utils/utils";
 import { useStateValue } from "../../contexts/auth.context";
-import "./timer.styles.scss"
+import "./timer.styles.scss";
 const Timer = ({ expiryTimestamp, myday }) => {
   const {
     currentUser: { id },
@@ -39,10 +39,7 @@ const Timer = ({ expiryTimestamp, myday }) => {
   return (
     <div className="timer">
       {myday.length > 0 && (
-        <>
-          <p className="mr-3">Time Left: </p>
-          <TimerStyled seconds={seconds} minutes={minutes} hours={hours} />
-        </>
+        <TimerStyled seconds={seconds} minutes={minutes} hours={hours} />
       )}
     </div>
   );

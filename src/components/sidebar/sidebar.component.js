@@ -9,17 +9,17 @@ import { Offline } from "react-detect-offline";
 
 const options = [
   { icon: "assets/sun-white.svg", label: "My Day", route: "/" },
-  { icon: "assets/star.svg", label: "Important", route: "/important" },
+  // { icon: "assets/star.svg", label: "Important", route: "/important" },
   { icon: "assets/tasks.svg", label: "Tasks", route: "/tasks" },
-  { icon: "assets/routine.svg", label: "Routine", route: "/routine" },
+  // { icon: "assets/routine.svg", label: "Routine", route: "/routine" },
   { icon: "assets/calendar.svg", label: "Calendar", route: "/calendar" },
 ];
 
 const activeMap = {
   "/": "My Day",
-  "/important": "Important",
+  // "/important": "Important",
   "/tasks": "Tasks",
-  "/routine": "Routine",
+  // "/routine": "Routine",
   "/calendar": "Calendar",
 };
 

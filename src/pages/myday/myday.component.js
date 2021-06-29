@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useTasksState } from "../../contexts/tasks.context";
-import Message from "../empty-tasks-message/message.component";
-import AddTask from "../add-task/add-task.component";
-import Task from "../task-row/task-row.component";
-import RightClickMenu from "../context-menu/context-menu.component";
-import Timer from "../timer/timer.component";
+import Message from "../../components/empty-tasks-message/message.component";
+import AddTask from "../../components/add-task/add-task.component";
+import Task from "../../components/task-row/task-row.component";
+import ContextMenuContainer from "../../components/context-menu/context-menu.container";
+import Timer from "../../components/timer/timer.component";
 import { useStateValue } from "../../contexts/auth.context";
 import "./myday.styles.scss";
+import PageHeader from "../../components/page-header/page-header.component";
 
 const MyDay = () => {
-  const { taskData, deleteTask } = useTasksState();
-  const {
-    currentUser: { id },
-  } = useStateValue();
+  const { taskData } = useTasksState();
   const myday =
     taskData && taskData.tasks.length > 0
       ? taskData.tasks.filter((task) => task.addedToMyDay)
@@ -37,18 +35,7 @@ const MyDay = () => {
         backgroundImage: `url(/assets/myday-image.jpg)`,
       }}
     >
-      <header>
-        <div className="today">
-          <p className="my-day">My Day</p>
-          <p className="date">{new Date().toDateString()}</p>
-        </div>
-        {myday.length > 0 && (
-          <Timer
-            expiryTimestamp={time}
-            myday={myday}
-          />
-        )}
-      </header>
+      <PageHeader title="My Day" myday={{tasks: myday, time: time}}/>
 
       {/* tasks div */}
       <div
@@ -61,19 +48,9 @@ const MyDay = () => {
       >
         {myday.length > 0 ? (
           myday.map((task, i) => (
-            <RightClickMenu
-              key={i}
-              idx={i}
-              menuItems={[
-                {
-                  label: "Delete",
-                  onClick: () => deleteTask(id, task),
-                  style: { color: "red", fontWeight: "bold" },
-                },
-              ]}
-            >
+            <ContextMenuContainer key={i} idx={i} task={task}>
               <Task task={task} />
-            </RightClickMenu>
+            </ContextMenuContainer>
           ))
         ) : (
           <Message />

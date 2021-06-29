@@ -22,20 +22,8 @@ const TaskProvider = ({ children }) => {
     setTaskData((_) => ({ ...tasks }));
   };
 
-  // const updateTasksCategory = (category, updatedTasks) => {
-  //   let tasksCopy = taskData;
-  //   Object.keys(tasksCopy).some((key) => {
-  //     if (key === category) {
-  //       tasksCopy[key] = updatedTasks;
-  //       return true;
-  //     }
-  //     return false;
-  //   });
-  //   setUserTasks({ ...tasksCopy });
-  // };
-
   const addTask = (userId, task) => {
-    task.id =  uuidv4()
+    task.id = uuidv4();
 
     let newTaskData = {
       ...taskData,
@@ -51,17 +39,24 @@ const TaskProvider = ({ children }) => {
       .catch((e) => console.log(e));
   };
 
-  // const addTaskToMyDay = (task) => {
-  //   let tasksCopy = taskData;
-  //   Object.keys(tasksCopy).some((key) => {
-  //     if (key === category) {
-  //       tasksCopy[key].unshift(task);
-  //       return true;
-  //     }
-  //     return false;
-  //   });
-  //   setUserTasks({ ...tasksCopy });
-  // };
+  const addTaskToMyDay = (userId, taskToAdd) => {
+    let tasksCopy = taskData;
+    tasksCopy.tasks.some((task) => {
+      if (task.id === taskToAdd.id) {
+        task.addedToMyDay = true;
+        return true;
+      }
+      return false;
+    });
+
+    setUserTasks({ ...tasksCopy });
+    updateTaskInFirebase(userId, {
+      taskId: taskToAdd.id,
+      fields: { addedToMyDay: true },
+    })
+      .then(() => console.log("task added to myday"))
+      .catch((e) => console.log(e));
+  };
 
   const toggleTaskChecked = (userId, taskId) => {
     let tasksCopy = taskData;
@@ -76,7 +71,7 @@ const TaskProvider = ({ children }) => {
       return false;
     });
 
-    updateTaskInFirebase(userId, update)
+    updateTaskInFirebase(userId, update);
 
     setUserTasks({ ...tasksCopy });
   };
@@ -84,7 +79,7 @@ const TaskProvider = ({ children }) => {
   const deleteTask = (userId, taskToDelete) => {
     let tasksCopy = taskData;
     tasksCopy.tasks.some((task, i) => {
-      if (task.text === taskToDelete.text) {
+      if (task.id === taskToDelete.id) {
         tasksCopy.tasks.splice(i, 1);
         return true;
       }
@@ -113,7 +108,11 @@ const TaskProvider = ({ children }) => {
       .catch((e) => console.log(e));
 
     let newTasks = clearMyDay();
-    setUserTasks({ ...taskData, tasks: newTasks, result: {todayResult, tasks} });
+    setUserTasks({
+      ...taskData,
+      tasks: newTasks,
+      result: { todayResult, tasks },
+    });
   };
 
   const clearMyDay = () => {
@@ -126,16 +125,40 @@ const TaskProvider = ({ children }) => {
     return newTasks;
   };
 
+  const removeFromMyDay = (userId, taskToRemove) => {
+    let tasksCopy = taskData;
+    tasksCopy.tasks.some((task, i) => {
+      if (task.id === taskToRemove.id) {
+        task.addedToMyDay = false;
+        return true;
+      }
+      return false;
+    });
+
+    setUserTasks({ ...tasksCopy });
+    updateTaskInFirebase(userId, {
+      taskId: taskToRemove.id,
+      fields: { addedToMyDay: false },
+    })
+      .then(() => console.log("task removed from myday"))
+      .catch((e) => console.log(e));
+  };
+
   return (
     <Provider
       value={{
         taskData: taskData,
         setUserTasks: (tasks) => setUserTasks(tasks),
         addTask: (userId, task) => addTask(userId, task),
-        toggleTaskChecked: (userId, taskId) => toggleTaskChecked(userId, taskId),
+        toggleTaskChecked: (userId, taskId) =>
+          toggleTaskChecked(userId, taskId),
         deleteTask: (userId, taskToDelete) => deleteTask(userId, taskToDelete),
         setTodayResult: (id, result) => setTodayResult(id, result),
         clearMyDay: () => clearMyDay(),
+        removeFromMyDay: (userId, taskToRemove) =>
+          removeFromMyDay(userId, taskToRemove),
+        addTaskToMyDay: (userId, taskToAdd) =>
+          addTaskToMyDay(userId, taskToAdd),
       }}
     >
       {children}

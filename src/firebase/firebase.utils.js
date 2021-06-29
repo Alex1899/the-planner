@@ -72,7 +72,7 @@ export const signInWithEmail = async ({ email, password }) => {
 };
 
 export const getUserTasks = async (userId) => {
-  const ref = firestore.collection(`users/${userId}/allTasks`);
+  const ref = firestore.collection(`users/${userId}/tasks`);
   let tasksSnapshot = await ref.get();
   let allTasks = tasksSnapshot.docs.map((doc) => doc.data());
   allTasks.length > 0 && console.log(allTasks[0]);
@@ -87,7 +87,7 @@ export const addTaskToFirebase = async (userId, task) => {
 
   try {
     await userDocRef
-      .collection("allTasks")
+      .collection("tasks")
       .doc(task.id)
       .set({
         ...task,
@@ -101,7 +101,7 @@ export const removeTaskFromFirebase = async (userId, task) => {
   const userRef = firestore.doc(`users/${userId}`);
   try {
     await userRef
-      .collection("allTasks")
+      .collection("tasks")
       .doc(task.id)
       .delete()
       .then(() => {
@@ -144,7 +144,7 @@ export const getAllUserEvents = async (userId) => {
 };
 
 export const updateTaskInFirebase = async (userId, update) => {
-  const tasksRef = firestore.doc(`users/${userId}/allTasks/${update.taskId}`);
+  const tasksRef = firestore.doc(`users/${userId}/tasks/${update.taskId}`);
   try {
     await tasksRef.update({
       ...update.fields,

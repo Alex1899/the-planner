@@ -23,9 +23,9 @@ const SepartorContainer = styled.span`
 
 const Separtor = styled.span`
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  background-color: #404549;
+  width: 4px;
+  height: 4px;
+  background-color: #E6E6E6;
   border-radius: 6px;
   margin: 5px 0px;
 `;

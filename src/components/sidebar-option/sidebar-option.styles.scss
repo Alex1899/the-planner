@@ -9,6 +9,9 @@
   img {
     width: 25px;
   }
+  span{
+    font-size: 15px;
+  }
 
   &:hover {
     background-color: lighten($color: #303030, $amount: 10);

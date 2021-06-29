@@ -12,8 +12,9 @@ const Container = styled.div`
 `;
 
 const Title = styled.span`
-  font-size: 13px;
-  font-weight: bold;
+  font-size: 11px;
+ 
+  color: white;
   margin-bottom: 5px;
   margin-top: 5px;
 
