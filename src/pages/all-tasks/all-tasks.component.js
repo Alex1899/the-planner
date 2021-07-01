@@ -3,9 +3,7 @@ import { useStateValue } from "../../contexts/auth.context";
 import { useTasksState } from "../../contexts/tasks.context";
 import { getUserTasks } from "../../firebase/firebase.utils";
 import { Spinner } from "react-bootstrap";
-import ContextMenuContainer from "../../components/context-menu/context-menu.container";
-import Task from "../../components/task-row/task-row.component";
-import Message from "../../components/empty-tasks-message/message.component";
+import DraggableList from "../../components/draggable-task/draggable-task.component";
 import AddTask from "../../components/add-task/add-task.component";
 import "./all-tasks.styles.scss"
 const AllTasks = () => {
@@ -60,24 +58,7 @@ const AllTasks = () => {
           </header>
 
           {/* tasks div */}
-          <div
-            className="tasks-list"
-            style={
-              tasks.length < 1
-                ? { alignItems: "center", justifyContent: "center" }
-                : undefined
-            }
-          >
-            {tasks.length > 0 ? (
-              tasks.map((task, i) => (
-                <ContextMenuContainer key={i} idx={i} task={task}>
-                  <Task task={task} />
-                </ContextMenuContainer>
-              ))
-            ) : (
-              <Message />
-            )}
-          </div>
+          <DraggableList tasks={tasks} />
 
           <AddTask />
         </div>

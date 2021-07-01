@@ -22,9 +22,9 @@ const HomePage = ({ match }) => {
   }
 
   return (
-    <div>
+    <div className="home-container">
       {isTabletOrMobile && <Header showSidebar={showSidebar} onMenuClick={() => onMenuClick()} />}
-      <div className="home">
+      <div className="home-div" style={{height: isTabletOrMobile ? "calc(100% - 50px)" : "100%" }}>
         <Sidebar show={showSidebar} defaultStyle={!isTabletOrMobile} onMenuClick={isTabletOrMobile ? () => onMenuClick(): null}/>
         <Switch>
           <Route exact path={match.url} component={MyDay} />

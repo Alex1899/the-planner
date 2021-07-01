@@ -1,0 +1,49 @@
+.modal-content {
+  background-color: #303030 !important;
+  color: #e6e6e6;
+  width: auto;
+  margin: auto;
+
+  .modal-title {
+    font-size: 25px;
+  }
+  .modal-input {
+    margin-left: 10px;
+    background: transparent;
+    color: white;
+    border: none;
+
+    &:active,
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .edit-img {
+    margin-left: 3px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .modal-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    span {
+      margin-left: 10px;
+    }
+
+    &:hover {
+      opacity: 0.7;
+      cursor: pointer;
+    }
+  }
+
+  @media only screen and (max-width: 600px) {
+    .modal-title {
+      font-size: 17px !important;
+    }
+    
+  }
+}

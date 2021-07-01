@@ -19,8 +19,8 @@ const Title = styled.span`
   margin-top: 5px;
 
   @media only screen and (max-width: 600px) {
-    font-size: 12px;
-    margin-top: 0;
+    font-size: 8px;
+    margin-top: 5px;
   }
 `;
 

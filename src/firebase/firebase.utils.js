@@ -1,6 +1,11 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import "firebase/messaging";
+import axios from "axios";
+
+let serverKey =
+  "AAAA07FR39k:APA91bGqkWEcsmy09KDO_XORIrTIY2KKsJ64GRYnOwlEEmQuljLryZTfkFVZ070H8OW9ncXG8DhGBF_5iTfLmsKSlyezOwLYc1YWhZ7S1Yk3Ig97l1b_OOI5RbQxi_i35D9V2Bof_fsU";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBsB_jY5JAtfYmRUN1IN_2dLmT0g-2OPsQ",
@@ -16,8 +21,79 @@ firebase.initializeApp(firebaseConfig);
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
 
+const messaging = firebase.messaging();
+
 export const googleProvider = new firebase.auth.GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
+
+export const onMessageListener = () =>
+  new Promise((resolve) => {
+    messaging.onMessage((payload) => {
+      resolve(payload);
+    });
+  });
+
+export const getToken = (uid) => {
+  console.log("getting token");
+  return messaging
+    .getToken({
+      vapidKey:
+        "BDIuST9FiGNPtaUWe9XFh0-hYkUl3OnnejMFGcI55mg42JSMBmyjHRdWaGtsRU_fjxPlZVfHHw9CZyjnp9u7SME",
+    })
+    .then((currentToken) => {
+      if (currentToken) {
+        addUserMessagingToken(uid, currentToken);
+      } else {
+        console.log(
+          "No registration token available. Request permission to generate one."
+        );
+        // shows on the UI that permission is required
+      }
+    })
+    .catch((err) => {
+      console.log("An error occurred while retrieving token. ", err);
+      // catch error while creating client token
+    });
+};
+
+const addUserMessagingToken = async (uid, token) => {
+  const userRef = firestore.doc(`users/${uid}`);
+  try {
+    await userRef.set({
+      msgToken: token,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const notifyUser = async (uid, message) => {
+  const userRef = firestore.doc(`users/${uid}`);
+  const snapshot = await userRef.get();
+  let data = snapshot.data();
+  let token = data.msgToken;
+  axios
+    .post(
+      "https://fcm.googleapis.com/fcm/send",
+      {
+        notification: {
+          title: "The Planner",
+          body: message,
+          click_action: "https://the-planner.netlify.app/",
+          icon: "/goal-192x192.png",
+        },
+        to: token,
+      },
+      {
+        headers: {
+          Authorization: `key=${serverKey}`,
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then((res) => console.log("user notified"))
+    .catch((e) => console.log(e));
+};
 
 export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
@@ -123,12 +199,12 @@ export const addTaskToFirebase = async (userId, task) => {
   }
 };
 
-export const removeTaskFromFirebase = async (userId, task) => {
+export const removeTaskFromFirebase = async (userId, taskId) => {
   const userRef = firestore.doc(`users/${userId}`);
   try {
     await userRef
       .collection("tasks")
-      .doc(task.id)
+      .doc(taskId)
       .delete()
       .then(() => {
         console.log("Task successfully deleted from firebase!");

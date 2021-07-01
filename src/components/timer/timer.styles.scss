@@ -1,16 +1,8 @@
-.timer { 
-    display: flex;
-    align-items: center;
-    p {
-        margin: 0;
-        font-size: 30px;
-       
-    }
+.timer {
+  display: flex;
+  align-items: center;
 
-    @media only screen and (max-width: 600px) {
-        flex-direction: column;
-        p { 
-            font-size: 25px;
-        }
-      }
+  @media only screen and (max-width: 600px) {
+    flex-direction: column;
+  }
 }

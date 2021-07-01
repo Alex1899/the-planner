@@ -1,9 +1,11 @@
-.home {
-    display: flex;
-    width: 100vw;
+.home-container{
     height: 100vh;
+
+  .home-div {
+    width: 100vw;
+    display: flex;
     float: left;
     position: relative;
-    overflow:hidden;
+    overflow: hidden;
+  }
 }
-

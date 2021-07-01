@@ -73,7 +73,7 @@ const TaskCalendar = () => {
           components={{
             event: Event,
           }}
-          style={{ padding: 10 }}
+          style={{ padding: 10, height: "90%" }}
         />
       )}
     </>
