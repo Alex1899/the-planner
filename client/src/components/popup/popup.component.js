@@ -26,7 +26,7 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
     if (!disabled) {
       setDisabled((d) => !d);
     }
-    onTaskTextEdit()
+    onTaskTextEdit();
     onClose();
   };
 

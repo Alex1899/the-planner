@@ -1,0 +1,4 @@
+[build]
+  command = "run-p functions build"
+  functions = "build-lambda"
+  publish = "build" 

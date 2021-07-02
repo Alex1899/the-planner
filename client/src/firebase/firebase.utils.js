@@ -7,7 +7,7 @@ import axios from "axios";
 let serverKey =
   "AAAA07FR39k:APA91bGqkWEcsmy09KDO_XORIrTIY2KKsJ64GRYnOwlEEmQuljLryZTfkFVZ070H8OW9ncXG8DhGBF_5iTfLmsKSlyezOwLYc1YWhZ7S1Yk3Ig97l1b_OOI5RbQxi_i35D9V2Bof_fsU";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyBsB_jY5JAtfYmRUN1IN_2dLmT0g-2OPsQ",
   authDomain: "theplanner-fe2a0.firebaseapp.com",
   projectId: "theplanner-fe2a0",
@@ -59,9 +59,12 @@ export const getToken = (uid) => {
 const addUserMessagingToken = async (uid, token) => {
   const userRef = firestore.doc(`users/${uid}`);
   try {
-    await userRef.set({
-      msgToken: token,
-    });
+    await userRef.set(
+      {
+        msgToken: token,
+      },
+      { merge: true }
+    );
   } catch (e) {
     console.log(e);
   }
@@ -175,11 +178,15 @@ export const signInWithGoogle = async () => {
 
 export const getUserTasks = async (userId) => {
   const ref = firestore.collection(`users/${userId}/tasks`);
-  let tasksSnapshot = await ref.get();
-  let allTasks = tasksSnapshot.docs.map((doc) => doc.data());
-  allTasks.length > 0 && console.log(allTasks[0]);
+  try {
+    let tasksSnapshot = await ref.get();
+    let allTasks = tasksSnapshot.docs.map((doc) => doc.data());
+    allTasks.length > 0 && console.log(allTasks[0]);
 
-  return { tasks: allTasks };
+    return { tasks: allTasks };
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 // export const saveTodayResult = async (result) => {};
@@ -258,4 +265,25 @@ export const updateTaskInFirebase = async (userId, update) => {
   }
 };
 
-// export const getEventTasks = async (userId)
+export const startUsersMission = async (uid) => {
+  const userRef = firestore.doc(`users/${uid}`);
+  let snap = await userRef.get();
+
+  if (!snap.onAmission) {
+    try {
+      await userRef.set(
+        {
+          onAmission: true,
+        },
+        { merge: true }
+      );
+
+      return { res: "success" };
+    } catch (e) {
+      console.log(e);
+      return { res: "error" };
+    }
+  } else {
+    return { res: "already started" };
+  }
+};

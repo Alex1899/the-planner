@@ -1,8 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Timer from "../timer/timer.component";
-import "./page-header.styles.scss"
+import axios from "axios";
+import "./page-header.styles.scss";
+import { useStateValue } from "../../contexts/auth.context";
 
 const PageHeader = ({ title, myday }) => {
+  const {
+    currentUser: { id },
+  } = useStateValue();
+
+  useEffect(() => {
+    if (myday && myday.tasks && myday.tasks.length < 1) {
+      axios
+        .get(`/.netlify/functions/stopTimer?id=${id}`)
+        .then(() => console.log("timer stopped"));
+    }
+  }, [myday, id]);
+
   return (
     <header>
       <div className="today">
@@ -13,7 +27,11 @@ const PageHeader = ({ title, myday }) => {
           </>
         ) : (
           <div className="d-flex align-items-center">
-            <img style={{marginRight: 10}} src={`/assets/${title.toLowerCase()}.svg`} alt="icon" />
+            <img
+              style={{ marginRight: 10 }}
+              src={`/assets/${title.toLowerCase()}.svg`}
+              alt="icon"
+            />
             <p className="title">{title}</p>
           </div>
         )}

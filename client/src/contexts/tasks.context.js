@@ -6,6 +6,7 @@ import {
   updateTaskInFirebase,
 } from "../firebase/firebase.utils";
 import { v4 as uuidv4 } from "uuid";
+import axios from "axios"
 
 const TaskContext = createContext();
 const { Provider } = TaskContext;
@@ -39,26 +40,14 @@ const TaskProvider = ({ children }) => {
       .catch((e) => console.log(e));
   };
 
-  const addTaskToMyDay = (userId, taskId) => {
-    let tasksCopy = taskData;
-    tasksCopy.tasks.some((task) => {
-      if (task.id === taskId) {
-        task.addedToMyDay = true;
-        return true;
-      }
-      return false;
-    });
-
-    setUserTasks({ ...tasksCopy });
-    updateTaskInFirebase(userId, {
-      taskId,
-      fields: { addedToMyDay: true },
-    })
-      .then(() => console.log("task added to myday"))
-      .catch((e) => console.log(e));
-  };
 
   const updateSpecificTask = (userId, { taskId, update }) => {
+    if(update.addedToMyDay){
+      axios
+      .get(`/.netlify/functions/startTimer?id=${userId}`)
+      .then((res) => console.log(res));
+    }
+
     let tasksCopy = taskData;
     tasksCopy.tasks.some((task) => {
       if (task.id === taskId) {

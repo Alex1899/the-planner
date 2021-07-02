@@ -16,27 +16,6 @@ const Timer = ({ expiryTimestamp, myday }) => {
   const { seconds, minutes, hours } = useTimer({
     expiryTimestamp,
     onExpire: () => {
-      let date = new Date();
-      let yesterday = new Date().setDate(date.getDate() - 1);
-
-      let result = {
-        id: Date.now(),
-        title: "",
-        start: yesterday,
-        end: yesterday,
-      };
-
-      if (tasksNotFinished(myday)) {
-        setTodayResult(id, {
-          todayResult: { ...result, title: "L" },
-          tasks: myday,
-        });
-      } else {
-        setTodayResult(id, {
-          todayResult: { ...result, title: "W" },
-          tasks: myday,
-        });
-      }
       clearMyDay();
     },
   });
