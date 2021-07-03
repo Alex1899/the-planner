@@ -25,7 +25,7 @@ function App() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    currentUser && getToken(currentUser.id);
+    currentUser && navigator.onLine && getToken(currentUser.id);
   }, [currentUser]);
 
   onMessageListener()
@@ -60,16 +60,21 @@ function App() {
   useEffect(() => {
     if (currentUser && !tasksFetched && navigator.onLine) {
       (async () => {
-        if(taskData && taskData.tasks.length > 0){
-          console.log("checking local tasks if update is needed")
-          await checkLocalTasksAndUpdate(currentUser.id, taskData.tasks)
+        if (taskData && taskData.tasks.length > 0) {
+          console.log("checking local tasks if update is needed");
+          await checkLocalTasksAndUpdate(currentUser.id, taskData.tasks);
         }
 
         getUserTasks(currentUser.id)
           .then((tasks) => {
-            console.log("updating tasks from server");
-            setTasksFetched((t) => !t);
-            setUserTasks(tasks);
+            console.log(tasks)
+            if (tasks.tasks.length > 0) {
+              console.log("updating tasks from server");
+              setTasksFetched((t) => !t);
+              setUserTasks(tasks);
+            } else {
+              setTasksFetched((t) => !t);
+            }
           })
           .catch((e) => {
             console.log(e);
@@ -78,7 +83,6 @@ function App() {
       })();
     }
   }, [currentUser, setUserTasks, taskData, tasksFetched]);
-
 
   return (
     <div className="d-flex">
