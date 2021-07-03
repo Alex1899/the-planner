@@ -9,8 +9,7 @@ admin.initializeApp({
 // Set up an instance of the DB
 const firestore = admin.firestore();
 
-const startUsersMission = async (uid) => {
-  const userRef = firestore.doc(`users/${uid}`);
+const startUsersMission = async (userRef) => {
   let snap = await userRef.get();
   let data = snap.data();
 
@@ -36,15 +35,33 @@ const startUsersMission = async (uid) => {
 export async function handler(event) {
   let uid = event.queryStringParameters.id;
   console.log(uid);
+  const userRef = firestore.doc(`users/${uid}`);
 
-  let res = await startUsersMission(uid);
+  let res = await startUsersMission(userRef);
   console.log(res);
 
   if (res.res === "success") {
-    await axios.get(`http://localhost:5000/startTimer/${uid}`);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({data: "timer started"})
+    try {
+      await axios.get(`https://theplanner1.herokuapp.com/api/startTimer/${uid}`);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ data: "timer started" }),
+      };
+    } catch (e) {
+      console.log(e.message);
+      // discard mission
+      try {
+        await userRef.update({
+          onAmission: false,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+
+      return {
+        statusCode: 500,
+        body: JSON.stringify("Error happened on the server :("),
+      };
     }
   }
   return {

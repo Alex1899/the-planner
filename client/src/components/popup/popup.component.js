@@ -2,12 +2,16 @@ import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useStateValue } from "../../contexts/auth.context";
 import { useTasksState } from "../../contexts/tasks.context";
+import axios from "axios";
 import "./popup.styles.scss";
 
 const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
   const [disabled, setDisabled] = useState(true);
   const [editText, setEditText] = useState(task.text);
-  const { updateSpecificTask, deleteTask } = useTasksState();
+  const { taskData, updateSpecificTask, deleteTask } = useTasksState();
+  const mydayLength =
+    taskData && taskData.tasks.filter((task) => task.addedToMyDay).length;
+
   const {
     currentUser: { id },
   } = useStateValue();
@@ -34,6 +38,36 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
     if (disabled) {
       setDisabled((d) => !d);
     }
+  };
+
+  const stopTimerIfMydayEmpty = () => {
+    if (mydayLength === 1) {
+      axios
+        .get(`/.netlify/functions/stopTimer?id=${id}`)
+        .then(() => console.log("timer stopped"))
+        .catch((e)=> console.log(e.message))
+    }
+  };
+
+  const addToMyDay = () => {
+    updateSpecificTask(id, {
+      taskId: task.id,
+      update: { addedToMyDay: true },
+    });
+  };
+
+  const removeFromMyDay = () => {
+    stopTimerIfMydayEmpty();
+
+    updateSpecificTask(id, {
+      taskId: task.id,
+      update: { addedToMyDay: false },
+    });
+  };
+
+  const deleteTaskFromDB = () => {
+    stopTimerIfMydayEmpty();
+    deleteTask(id, task.id);
   };
 
   return (
@@ -94,17 +128,7 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
           <div
             className="modal-option"
             onClick={
-              task.addedToMyDay
-                ? () =>
-                    updateSpecificTask(id, {
-                      taskId: task.id,
-                      update: { addedToMyDay: false },
-                    })
-                : () =>
-                    updateSpecificTask(id, {
-                      taskId: task.id,
-                      update: { addedToMyDay: true },
-                    })
+              task.addedToMyDay ? () => removeFromMyDay() : () => addToMyDay()
             }
           >
             <img src="/assets/sun-white.svg" alt="myday" />
@@ -113,7 +137,7 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
             </span>
           </div>
 
-          <div className="modal-option" onClick={() => deleteTask(id, task.id)}>
+          <div className="modal-option" onClick={() => deleteTaskFromDB()}>
             <img src="/assets/delete.svg" alt="remove" />
             <span>Delete task</span>
           </div>

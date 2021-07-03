@@ -52,7 +52,7 @@
     "build:app": "react-scripts build",
     "build:lambda": "netlify-lambda build functions/",
     "predeploy": "rm -rf build && npm run build",
-    "deploy": "touch build/_redirects && echo \"/*  /index.html  200\" && netlify deploy --prod --dir \"./build\"",
+    "deploy": "touch build/_redirects && echo \"/api/* https://theplanner1.herokuapp.com/:splat 200 \n/*  /index.html  200\" >> build/_redirects && netlify deploy --prod --dir \"./build\"",
     "serve:lambda": "netlify-lambda serve functions/startTimer/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

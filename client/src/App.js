@@ -8,6 +8,7 @@ import { useTasksState } from "./contexts/tasks.context";
 import { Toast } from "react-bootstrap";
 import { Spinner } from "react-bootstrap";
 import {
+  checkLocalTasksAndUpdate,
   getCurrentUser,
   getToken,
   getUserTasks,
@@ -24,7 +25,6 @@ function App() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    console.log("getting token in useeffect");
     currentUser && getToken(currentUser.id);
   }, [currentUser]);
 
@@ -58,9 +58,13 @@ function App() {
   }, [setUser, currentUser]);
 
   useEffect(() => {
-    console.log("task fetching useEffect run from App");
-    if (currentUser && !tasksFetched) {
+    if (currentUser && !tasksFetched && navigator.onLine) {
       (async () => {
+        if(taskData && taskData.tasks.length > 0){
+          console.log("checking local tasks if update is needed")
+          await checkLocalTasksAndUpdate(currentUser.id, taskData.tasks)
+        }
+
         getUserTasks(currentUser.id)
           .then((tasks) => {
             console.log("updating tasks from server");
@@ -74,6 +78,7 @@ function App() {
       })();
     }
   }, [currentUser, setUserTasks, taskData, tasksFetched]);
+
 
   return (
     <div className="d-flex">

@@ -4,8 +4,9 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const axios = require("axios");
-
+var cors = require('cors')
 var app = express();
+
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -16,28 +17,34 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(cors())
 // app.use("/", (req, res, next) => {
 //   res.render("index", { title: "The Planner Server" });
 // });
 
+app.get("/", (req, res, next) => {
+  res.render("index", { title: "The Planner Server"})
+})
+
 app.get("/startTimer/:id", (req, res, next) => {
   let userId = req.params.id;
   const time = new Date();
-  time.setSeconds(
+  let secs =
     24 * 60 * 60 -
-      time.getHours() * 60 * 60 -
-      time.getMonth() * 60 -
-      time.getSeconds()
-  );
+    time.getHours() * 60 * 60 -
+    time.getMonth() * 60 -
+    time.getSeconds();
+
   console.log("received user", userId);
   let timer = null;
 
   // start timer
   let timerName = userId;
-  axios.get(`https://timercheck.io/${timerName}/${120}`).then((res) => {
+
+  console.log("need to wait", secs);
+  axios.get(`https://timercheck.io/${timerName}/${secs}`).then((res) => {
     console.log("timer started...");
-    let secondsLeft = 120;
+    let secondsLeft = secs;
 
     timer = setTimeout(() => {
       console.log("timer expired! checking result....");
@@ -54,8 +61,7 @@ app.get("/startTimer/:id", (req, res, next) => {
       axios
         .get(`https://timercheck.io/${timerName}`)
         .then((res) => {
-          secondsLeft = res.data.seconds_remaining;
-          console.log("seconds remaining: ", secondsLeft);
+          console.log("seconds remaining: ", res.data.seconds_remaining);
         })
         .catch((e) => {
           if (e.response.status === 504) {
@@ -66,7 +72,7 @@ app.get("/startTimer/:id", (req, res, next) => {
             clearInterval(interval);
           }
         });
-    }, 5000);
+    }, 3600 * 1000);
   });
 
   res.send({ data: "received" });

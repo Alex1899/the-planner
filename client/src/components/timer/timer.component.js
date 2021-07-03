@@ -13,18 +13,34 @@ const Timer = ({ expiryTimestamp, myday }) => {
   } = useStateValue();
   const { clearMyDay, setTodayResult } = useTasksState();
 
+  const setResultIfOffline = () => {
+    if (!navigator.onLine) {
+      let date = new Date();
+      let yesterday = new Date().setDate(date.getDate() - 1);
+
+      let result = {
+        id: Date.now(),
+        title: tasksNotFinished(myday) ? "L" : "W",
+        start: yesterday,
+        end: yesterday,
+      };
+
+      setTodayResult(id, { todayResult: result, tasks: myday });
+    }
+    clearMyDay();
+    console.log("myday cleared")
+  };
+
   const { seconds, minutes, hours } = useTimer({
     expiryTimestamp,
-    onExpire: () => {
-      clearMyDay();
-    },
+    onExpire: () => setResultIfOffline(),
   });
 
   useEffect(() => {
     if (hours === 1 && seconds === 59) {
       let message = `Hey, ${displayName}! You have less than 1 hour left to crush your tasks and get that juicy WIN! GET AFTER IT`;
       notifyUser(id, message);
-      console.log("message sent")
+      console.log("message sent");
     }
   }, [hours, displayName, id, seconds]);
 

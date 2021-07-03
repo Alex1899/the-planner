@@ -17,11 +17,7 @@ const Task = ({ task, provided, style }) => {
       update: { checked: !checked },
     });
   };
-
-  useEffect(() => {
-    console.log("updated state", popup);
-  }, [popup]);
-
+  
   return (
     <>
       <div

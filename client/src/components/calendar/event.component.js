@@ -39,7 +39,7 @@ const Event = ({ event }) => (
         textAlign: "center",
       }}
     >
-      {event.title}
+     {event.title}
     </div>
   </OverlayTrigger>
 );

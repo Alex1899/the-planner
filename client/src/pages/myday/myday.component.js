@@ -15,14 +15,13 @@ const MyDay = () => {
       : [];
 
   const time = new Date();
-  // time.setSeconds(
-  //   24 * 60 * 60 -
-  //     time.getHours() * 60 * 60 -
-  //     time.getMonth() * 60 -
-  //     time.getSeconds()
-  // );
+  time.setSeconds(
+    24 * 60 * 60 -
+      time.getHours() * 60 * 60 -
+      time.getMonth() * 60 -
+      time.getSeconds()
+  );
 
-  time.setSeconds(60);
   useEffect(() => {
     console.log("myday rendered");
   });

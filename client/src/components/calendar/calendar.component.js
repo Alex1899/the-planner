@@ -16,26 +16,31 @@ const TaskCalendar = () => {
     currentUser: { id },
   } = useStateValue();
   const [spinner, toggleSpinner] = useState(false);
-  const [events, setEvents] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [eventsFetched, setEventsFetched] = useState(false)
 
   useEffect(() => {
     console.log("calendar rendered");
-    if (navigator.onLine) {
-      if (!events) {
+    if (navigator.onLine && !eventsFetched) {
+      if (events.length < 1) {
         console.log("inside useeffect");
         toggleSpinner((_) => true);
         getAllUserEvents(id)
           .then((res) => {
-            setEvents((_) => res.events);
+            console.log(res);
+            setEventsFetched((o) => !o)
+            setEvents([...res.events]);
             toggleSpinner((_) => false);
+            
           })
           .catch((e) => {
             console.log(e);
+            setEventsFetched((o) => !o)
             toggleSpinner((_) => false);
           });
       }
     }
-  }, [events, id]);
+  }, [events, id, eventsFetched]);
 
   return (
     <>
@@ -51,22 +56,13 @@ const TaskCalendar = () => {
           localizer={localizer}
           events={
             taskData && taskData.result
-              ? events
-                ? events.concat([
-                    {
-                      ...taskData.result.todayResult,
-                      tasks: taskData.result.tasks,
-                    },
-                  ])
-                : [
-                    {
-                      ...taskData.result.todayResult,
-                      tasks: taskData.result.tasks,
-                    },
-                  ]
+              ? events.concat([
+                  {
+                    ...taskData.result.todayResult,
+                    tasks: taskData.result.tasks,
+                  },
+                ])
               : events
-              ? events
-              : []
           }
           views={["month"]}
           tooltipAccessor={(e) => ""}

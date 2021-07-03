@@ -18,15 +18,23 @@ const stopMission = async (uid) => {
     await userRef.update({
       onAmission: false,
     });
-    // stop timer
-    await axios.get(`http://localhost:5000/stopTimer/${uid}`);
+    try {
+      // stop timer
+      await axios.get(`https://theplanner1.herokuapp.com/api/stopTimer/${uid}`);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ res: "Timer stopped" }),
-    };
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ res: "Timer stopped" }),
+      };
+    } catch (e) {
+      console.log(e.message);
+      return {
+        statusCode: 500,
+        body: JSON.stringify("Error happened on the server :(")
+      }
+    }
   }
-  console.log("user not on a mission")
+  console.log("user not on a mission");
   return {
     statusCode: 200,
     body: JSON.stringify({ res: "User not on a mission" }),

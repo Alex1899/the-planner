@@ -34,7 +34,6 @@ export const onMessageListener = () =>
   });
 
 export const getToken = (uid) => {
-  console.log("getting token");
   return messaging
     .getToken({
       vapidKey:
@@ -181,7 +180,6 @@ export const getUserTasks = async (userId) => {
   try {
     let tasksSnapshot = await ref.get();
     let allTasks = tasksSnapshot.docs.map((doc) => doc.data());
-    allTasks.length > 0 && console.log(allTasks[0]);
 
     return { tasks: allTasks };
   } catch (e) {
@@ -244,8 +242,10 @@ export const getAllUserEvents = async (userId) => {
   try {
     const eventsSnapshot = await eventsCollection.get();
     let allEvents = eventsSnapshot.docs.map((doc) => doc.data());
+    console.log("events from sever", allEvents)
+    let events = allEvents.map(event => ({...event.todayResult, tasks: event.tasks}))
 
-    return { events: allEvents };
+    return { events };
   } catch (e) {
     console.log("Error getting events from firebase", e);
     return {};
@@ -286,4 +286,22 @@ export const startUsersMission = async (uid) => {
   } else {
     return { res: "already started" };
   }
+};
+
+export const checkLocalTasksAndUpdate = async (uid, localTasks) => {
+  const tasksRef = firestore.collection(`users/${uid}/tasks`);
+  localTasks.forEach(async (task) => {
+    let doc = tasksRef.doc(task.id);
+    let snap = await doc.get();
+    if (!snap.exists) {
+      console.log("update needed")
+      try {
+        await doc.set({
+          ...task,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  });
 };

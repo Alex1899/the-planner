@@ -16,7 +16,6 @@ const TaskProvider = ({ children }) => {
   const [taskData, setTaskData] = useState(tasks ? JSON.parse(tasks) : null);
 
   const setUserTasks = (tasks) => {
-    console.log("updating taskdata with:", tasks);
     if (tasks) {
       localStorage.setItem("tasks", JSON.stringify(tasks));
     }
@@ -45,7 +44,8 @@ const TaskProvider = ({ children }) => {
     if(update.addedToMyDay){
       axios
       .get(`/.netlify/functions/startTimer?id=${userId}`)
-      .then((res) => console.log(res));
+      .then((res) => console.log(res))
+      .catch(e => console.log(e))
     }
 
     let tasksCopy = taskData;
@@ -119,7 +119,8 @@ const TaskProvider = ({ children }) => {
         task.addedToMyDay = false;
       }
     });
-    return newTasks;
+    
+    setUserTasks({...taskData, tasks: newTasks})
   };
 
   const removeFromMyDay = (userId, taskId) => {
