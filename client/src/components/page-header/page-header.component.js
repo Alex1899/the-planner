@@ -1,10 +1,15 @@
 import React from "react";
-import { useTasksState } from "../../contexts/tasks.context";
 import Timer from "../timer/timer.component";
 import "./page-header.styles.scss";
 
 const PageHeader = ({ title, myday }) => {
-  const {taskData} = useTasksState()
+
+  let obj = new Date();
+  let secs =
+    24 * 60 * 60 -
+    obj.getHours() * 60 * 60 -
+    obj.getMonth() * 60 -
+    obj.getSeconds();
 
   return (
     <header>
@@ -25,8 +30,8 @@ const PageHeader = ({ title, myday }) => {
           </div>
         )}
       </div>
-      {myday && myday.length > 0 && taskData.expiryTime && (
-        <Timer expiryTimestamp={taskData.expiryTime} myday={myday} />
+      {myday && myday.length > 0 && (
+        <Timer expiryTimestamp={secs} myday={myday} />
       )}
     </header>
   );

@@ -26,7 +26,7 @@ app.get("/", (req, res, next) => {
   res.render("index", { title: "The Planner Server"})
 })
 
-app.get("/startTimer/:id", (req, res, next) => {
+app.get("/api/startTimer/:id", (req, res, next) => {
   let userId = req.params.id;
   const time = new Date();
   let secs =
@@ -78,7 +78,7 @@ app.get("/startTimer/:id", (req, res, next) => {
   res.send({ data: "received" });
 });
 
-app.get("/stopTimer/:id", (req, res, next) => {
+app.get("/api/stopTimer/:id", (req, res, next) => {
   let timerName = req.params.id;
   axios.get(`https://timercheck.io/${timerName}/0`).then(() => {
     console.log("timer stopped...");

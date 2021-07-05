@@ -17,20 +17,6 @@ const TaskProvider = ({ children }) => {
 
   const setUserTasks = (tasks) => {
     let newState = { ...tasks };
-
-    if (tasks) {
-      let addTimer = tasks.tasks.some((task) => task.addedToMyDay);
-      if (addTimer && taskData && !taskData.expiryTime) {
-        let obj = new Date();
-        let secs =
-          24 * 60 * 60 -
-          obj.getHours() * 60 * 60 -
-          obj.getMonth() * 60 -
-          obj.getSeconds();
-
-        newState.expiryTime = secs;
-      }
-    }
     localStorage.setItem("tasks", JSON.stringify(newState));
     setTaskData(() => newState);
   };
