@@ -71,7 +71,7 @@ function App() {
             if (tasks.tasks.length > 0) {
               console.log("updating tasks from server");
               setTasksFetched((t) => !t);
-              setUserTasks(tasks);
+              setUserTasks({...taskData, tasks: tasks.tasks});
             } else {
               setTasksFetched((t) => !t);
             }

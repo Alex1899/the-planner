@@ -1,8 +1,10 @@
 import React from "react";
+import { useTasksState } from "../../contexts/tasks.context";
 import Timer from "../timer/timer.component";
 import "./page-header.styles.scss";
 
 const PageHeader = ({ title, myday }) => {
+  const {taskData} = useTasksState()
 
   return (
     <header>
@@ -23,8 +25,8 @@ const PageHeader = ({ title, myday }) => {
           </div>
         )}
       </div>
-      {myday && myday.tasks.length > 0 && (
-        <Timer expiryTimestamp={myday.time} myday={myday.tasks} />
+      {myday && myday.length > 0 && taskData.expiryTime && (
+        <Timer expiryTimestamp={taskData.expiryTime} myday={myday} />
       )}
     </header>
   );

@@ -6,7 +6,7 @@ import {
   updateTaskInFirebase,
 } from "../firebase/firebase.utils";
 import { v4 as uuidv4 } from "uuid";
-import axios from "axios"
+import axios from "axios";
 
 const TaskContext = createContext();
 const { Provider } = TaskContext;
@@ -16,10 +16,23 @@ const TaskProvider = ({ children }) => {
   const [taskData, setTaskData] = useState(tasks ? JSON.parse(tasks) : null);
 
   const setUserTasks = (tasks) => {
+    let newState = { ...tasks };
+
     if (tasks) {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
+      let addTimer = tasks.tasks.some((task) => task.addedToMyDay);
+      if (addTimer && taskData && !taskData.expiryTime) {
+        let obj = new Date();
+        let secs =
+          24 * 60 * 60 -
+          obj.getHours() * 60 * 60 -
+          obj.getMonth() * 60 -
+          obj.getSeconds();
+
+        newState.expiryTime = secs;
+      }
     }
-    setTaskData((_) => ({ ...tasks }));
+    localStorage.setItem("tasks", JSON.stringify(newState));
+    setTaskData(() => newState);
   };
 
   const addTask = (userId, task) => {
@@ -39,13 +52,12 @@ const TaskProvider = ({ children }) => {
       .catch((e) => console.log(e));
   };
 
-
   const updateSpecificTask = (userId, { taskId, update }) => {
-    if(update.addedToMyDay){
+    if (update.addedToMyDay) {
       axios
-      .get(`/.netlify/functions/startTimer?id=${userId}`)
-      .then((res) => console.log(res))
-      .catch(e => console.log(e))
+        .get(`/.netlify/functions/startTimer?id=${userId}`)
+        .then((res) => console.log(res))
+        .catch((e) => console.log(e));
     }
 
     let tasksCopy = taskData;
@@ -62,6 +74,12 @@ const TaskProvider = ({ children }) => {
     updateTaskInFirebase(userId, { taskId, fields: update });
 
     setUserTasks({ ...tasksCopy });
+  };
+
+  const setExpiryTime = (time) => {
+    console.log("updating expiry time in context");
+    let newTaskData = { ...taskData, expiryTime: time };
+    setUserTasks(newTaskData);
   };
 
   const updateUserTasks = (reorderedMyDayList) => {
@@ -106,7 +124,6 @@ const TaskProvider = ({ children }) => {
 
     let newTasks = clearMyDay();
     setUserTasks({
-      ...taskData,
       tasks: newTasks,
       result: { todayResult, tasks },
     });
@@ -119,27 +136,7 @@ const TaskProvider = ({ children }) => {
         task.addedToMyDay = false;
       }
     });
-    
-    setUserTasks({...taskData, tasks: newTasks})
-  };
-
-  const removeFromMyDay = (userId, taskId) => {
-    let tasksCopy = taskData;
-    tasksCopy.tasks.some((task, i) => {
-      if (task.id === taskId) {
-        task.addedToMyDay = false;
-        return true;
-      }
-      return false;
-    });
-
-    setUserTasks({ ...tasksCopy });
-    updateTaskInFirebase(userId, {
-      taskId,
-      fields: { addedToMyDay: false },
-    })
-      .then(() => console.log("task removed from myday"))
-      .catch((e) => console.log(e));
+    return newTasks;
   };
 
   return (
@@ -153,6 +150,7 @@ const TaskProvider = ({ children }) => {
         setTodayResult,
         clearMyDay,
         updateUserTasks,
+        setExpiryTime,
       }}
     >
       {children}

@@ -11,10 +11,11 @@ const Timer = ({ expiryTimestamp, myday }) => {
   const {
     currentUser: { id, displayName },
   } = useStateValue();
-  const { clearMyDay, setTodayResult } = useTasksState();
+  const { taskData, clearMyDay, setTodayResult, setUserTasks } =
+    useTasksState();
 
   const setResultIfOffline = () => {
-    if (!navigator.onLine) {
+    // if (!navigator.onLine) {
       let date = new Date();
       let yesterday = new Date().setDate(date.getDate() - 1);
 
@@ -26,13 +27,17 @@ const Timer = ({ expiryTimestamp, myday }) => {
       };
 
       setTodayResult(id, { todayResult: result, tasks: myday });
-    }
-    clearMyDay();
-    console.log("myday cleared")
+    // } else {
+    //   let newTasks = clearMyDay();
+    //   setUserTasks({ ...taskData, tasks: newTasks });
+    // }
+    console.log("myday cleared");
   };
+  let time = new Date();
+  time.setSeconds(expiryTimestamp);
 
   const { seconds, minutes, hours } = useTimer({
-    expiryTimestamp,
+    expiryTimestamp: time,
     onExpire: () => setResultIfOffline(),
   });
 
