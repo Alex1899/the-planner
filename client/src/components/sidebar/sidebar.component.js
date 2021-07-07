@@ -51,8 +51,8 @@ const Sidebar = ({ show, defaultStyle, onMenuClick }) => {
               style={{ width: 50, height: 50, marginLeft: 10 }}
             />
             <div className="d-flex flex-column align-items-start">
-              <span>{currentUser.displayName}</span>
-              <span style={{ fontSize: 12 }}>{currentUser.email}</span>
+              <span className="username">{currentUser.displayName}</span>
+              <span className="email">{currentUser.email}</span>
 
               <Offline>
                 <img src="/assets/no-wifi.svg" alt="offline icon" />

@@ -50,7 +50,7 @@ app.get("/api/startTimer/:id", (req, res, next) => {
       console.log("timer expired! checking result....");
       axios
         .get(
-          `http://localhost:3000/.netlify/functions/checkResult?id=${userId}`
+          `https://the-planner.netlify.app/.netlify/functions/checkResult?id=${userId}`
         )
         .then(() => console.log("result checked"))
         .catch((e) => console.log(e));

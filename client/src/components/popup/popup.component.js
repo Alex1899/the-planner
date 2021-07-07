@@ -9,8 +9,6 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
   const [disabled, setDisabled] = useState(true);
   const [editText, setEditText] = useState(task.text);
   const { taskData, updateSpecificTask, deleteTask } = useTasksState();
-  const mydayLength =
-    taskData && taskData.tasks.filter((task) => task.addedToMyDay).length;
 
   const {
     currentUser: { id },
@@ -40,14 +38,6 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
     }
   };
 
-  const stopTimerIfMydayEmpty = () => {
-    if (mydayLength === 1) {
-      axios
-        .get(`/.netlify/functions/stopTimer?id=${id}`)
-        .then(() => console.log("timer stopped"))
-        .catch((e)=> console.log(e.message))
-    }
-  };
 
   const addToMyDay = () => {
     updateSpecificTask(id, {
@@ -57,7 +47,6 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
   };
 
   const removeFromMyDay = () => {
-    stopTimerIfMydayEmpty();
 
     updateSpecificTask(id, {
       taskId: task.id,
@@ -66,7 +55,6 @@ const TaskPopup = ({ open, onClose, task, onTaskClick }) => {
   };
 
   const deleteTaskFromDB = () => {
-    stopTimerIfMydayEmpty();
     deleteTask(id, task.id);
   };
 

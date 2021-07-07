@@ -39,11 +39,24 @@ const TaskProvider = ({ children }) => {
   };
 
   const updateSpecificTask = (userId, { taskId, update }) => {
-    if (update.addedToMyDay) {
-      axios
-        .get(`/.netlify/functions/startTimer?id=${userId}`)
-        .then((res) => console.log(res))
-        .catch((e) => console.log(e));
+    console.log("update", update)
+    if ("addedToMyDay" in update) {
+      console.log("added to myday is in update")
+      if (update.addedToMyDay) {
+        axios
+          .get(`/.netlify/functions/startTimer?id=${userId}`)
+          .then((res) => console.log(res))
+          .catch((e) => console.log(e));
+      } else {
+        let mydayTasks = taskData.tasks.filter((task) => task.addedToMyDay);
+        if (mydayTasks.length === 1) {
+          console.log("stopping timer...")
+          axios
+            .get(`/.netlify/functions/stopTimer?id=${userId}`)
+            .then((res) => console.log(res))
+            .catch((e) => console.log(e));
+        }
+      }
     }
 
     let tasksCopy = taskData;

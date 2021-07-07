@@ -67,7 +67,6 @@ function App() {
 
         getUserTasks(currentUser.id)
           .then((tasks) => {
-            console.log(tasks)
             if (tasks.tasks.length > 0) {
               console.log("updating tasks from server");
               setTasksFetched((t) => !t);

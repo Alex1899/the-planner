@@ -1,5 +1,4 @@
 .sidebar-wrapper {
-
   .sidebar {
     width: 300px;
     height: 100%;
@@ -34,6 +33,13 @@
     .user-info {
       display: flex;
       margin: 10px 0;
+
+      .username{
+        font-size: 17px;
+      }
+      .email{
+        font-size: 12px
+      }
     }
 
     .active {
@@ -47,13 +53,24 @@
       color: white;
       margin-left: 15px;
     }
+
+    @media only screen and (max-width: 600px) {
+      width: 250px;
+
+      .user-info{
+        flex-direction: column;
+        align-items: center;
+        .username{
+          margin-top: 10px;
+          font-size: 14px;
+        }
+        .email {
+          font-size: 9px;
+        }
+      }
+    }
   }
 }
-
-// .before-hiding-sidebar{
-//
-// }
-
 
 .show-sidebar {
   display: unset;
