@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const axios = require("axios");
+const moment = require("moment-timezone")
 var cors = require('cors')
 var app = express();
 
@@ -26,20 +27,25 @@ app.get("/", (req, res, next) => {
   res.render("index", { title: "The Planner Server"})
 })
 
-app.get("/api/startTimer/:id", (req, res, next) => {
-  let userId = req.params.id;
-  const time = new Date();
+app.post("/api/startTimer", (req, res, next) => {
+
+  let {uid, timezone} = req.body;
+
+  const time = moment().tz(timezone)
+  console.log(time.format('HH:mm:ss'))
   let secs =
     24 * 60 * 60 -
-    time.getHours() * 60 * 60 -
-    time.getMonth() * 60 -
-    time.getSeconds();
+    time.hours() * 60 * 60 -
+    time.minutes() * 60 -
+    time.seconds();
 
-  console.log("received user", userId);
+  console.log("received user", uid);
+  console.log("timezone", timezone)
+  console.log("time left in secs", secs)
   let timer = null;
 
   // start timer
-  let timerName = userId;
+  let timerName = uid;
 
   console.log("need to wait", secs);
   axios.get(`https://timercheck.io/${timerName}/${secs}`).then((res) => {
@@ -50,7 +56,7 @@ app.get("/api/startTimer/:id", (req, res, next) => {
       console.log("timer expired! checking result....");
       axios
         .get(
-          `https://the-planner.netlify.app/.netlify/functions/checkResult?id=${userId}`
+          `https://the-planner.netlify.app/.netlify/functions/checkResult?id=${uid}`
         )
         .then(() => console.log("result checked"))
         .catch((e) => console.log(e));

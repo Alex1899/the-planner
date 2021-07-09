@@ -41,8 +41,12 @@ export async function handler(event) {
   console.log(res);
 
   if (res.res === "success") {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
-      await axios.get(`https://theplanner1.herokuapp.com/api/startTimer/${uid}`);
+      await axios.post("https://theplanner1.herokuapp.com/api/startTimer", {
+        uid,
+        timezone,
+      });
       return {
         statusCode: 200,
         body: JSON.stringify({ data: "timer started" }),

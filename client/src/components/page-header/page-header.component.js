@@ -8,7 +8,7 @@ const PageHeader = ({ title, myday }) => {
   let secs =
     24 * 60 * 60 -
     obj.getHours() * 60 * 60 -
-    obj.getMonth() * 60 -
+    obj.getMinutes() * 60 -
     obj.getSeconds();
 
   return (
