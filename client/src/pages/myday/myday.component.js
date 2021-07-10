@@ -6,13 +6,17 @@ import PageHeader from "../../components/page-header/page-header.component";
 import DraggableList from "../../components/draggable-task/draggable-task.component";
 
 const MyDay = () => {
-  const { taskData } = useTasksState();
+  const { taskData, saveTimer } = useTasksState();
   let myday =
     taskData && taskData.tasks
       ? taskData.tasks.filter((task) => task.addedToMyDay)
       : [];
 
-
+  useEffect(() => {
+    if (myday.length < 1) {
+      saveTimer(0);
+    }
+  }, [myday.length, saveTimer]);
 
   return (
     <div

@@ -12,13 +12,19 @@ const AllTasks = () => {
     currentUser: { id },
   } = useStateValue();
   const [tasks, setTasks] = useState([]);
-  const { taskData } = useTasksState();
+  const { taskData, saveTimer } = useTasksState();
   const [spinner, toggleSpinner] = useState(false);
 
   let myday =
     taskData && taskData.tasks
       ? taskData.tasks.filter((task) => task.addedToMyDay)
       : [];
+
+  useEffect(() => {
+    if (myday.length < 1) {
+      saveTimer(0);
+    }
+  }, [myday.length, saveTimer]);
 
   useEffect(() => {
     console.log("AllTasks rendered");

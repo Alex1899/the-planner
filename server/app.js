@@ -80,7 +80,7 @@ app.post("/api/startTimer", (req, res, next) => {
             clearInterval(interval);
           }
         });
-    }, 5 * 1000);
+    }, 3600 * 1000);
   });
 
   res.send({ data: "received" });
