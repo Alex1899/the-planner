@@ -5,12 +5,12 @@ import "./page-header.styles.scss";
 const PageHeader = ({ title, myday }) => {
 
   let obj = new Date();
-  // let secs =
-  //   24 * 60 * 60 -
-  //   obj.getHours() * 60 * 60 -
-  //   obj.getMinutes() * 60 -
-  //   obj.getSeconds();
-  let secs = 60
+  let secs =
+    24 * 60 * 60 -
+    obj.getHours() * 60 * 60 -
+    obj.getMinutes() * 60 -
+    obj.getSeconds();
+
   
 
   return (

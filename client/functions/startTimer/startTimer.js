@@ -37,15 +37,15 @@ const startUsersMission = async (userRef) => {
 };
 
 export async function handler(event) {
-  let uid = event.queryStringParameters.id;
-  console.log(uid);
+  let body = JSON.parse(event.body)
+  let {uid, timezone} = body
+  console.log(body);
   const userRef = firestore.doc(`users/${uid}`);
 
   let res = await startUsersMission(userRef);
   console.log(res);
 
   if (res.res === "success") {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
       await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/startTimer`, {
         uid,

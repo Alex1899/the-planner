@@ -45,8 +45,8 @@ const checkTodayResult = async (uid) => {
         batch.update(taskDoc, { addedToMyDay: false });
       });
 
-      await batch.commit()
-      console.log("batch completed successfully")
+      await batch.commit();
+      console.log("batch completed successfully");
 
       return {
         statusCode: 200,

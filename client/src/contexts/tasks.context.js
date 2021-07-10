@@ -44,7 +44,10 @@ const TaskProvider = ({ children }) => {
       console.log("added to myday is in update");
       if (update.addedToMyDay) {
         axios
-          .get(`/.netlify/functions/startTimer?id=${userId}`)
+          .post("/.netlify/functions/startTimer", {
+            uid: userId,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          })
           .then((res) => console.log(res))
           .catch((e) => console.log(e));
       } else {
@@ -93,16 +96,16 @@ const TaskProvider = ({ children }) => {
 
   const deleteTask = (userId, taskId) => {
     let mydayTasks = taskData.tasks.filter((task) => task.addedToMyDay);
-  
+
     let tasksCopy = taskData;
     tasksCopy.tasks.some((task, i) => {
       if (task.id === taskId) {
         if (mydayTasks.length === 1 && task.addedToMyDay) {
-          saveTimer(0)
+          saveTimer(0);
           axios
-          .get(`/.netlify/functions/stopTimer?id=${userId}`)
-          .then((res) => console.log(res))
-          .catch((e) => console.log(e));
+            .get(`/.netlify/functions/stopTimer?id=${userId}`)
+            .then((res) => console.log(res))
+            .catch((e) => console.log(e));
         }
         tasksCopy.tasks.splice(i, 1);
         return true;

@@ -33,12 +33,12 @@ app.post("/api/startTimer", (req, res, next) => {
 
   const time = moment().tz(timezone)
   console.log(time.format('HH:mm:ss'))
-  // let secs =
-  //   24 * 60 * 60 -
-  //   time.hours() * 60 * 60 -
-  //   time.minutes() * 60 -
-  //   time.seconds();
-  let secs = 60
+  let secs =
+    24 * 60 * 60 -
+    time.hours() * 60 * 60 -
+    time.minutes() * 60 -
+    time.seconds();
+
 
 
   console.log("received user", uid);
