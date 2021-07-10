@@ -2,9 +2,13 @@ const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json"); // Update this to your file
 const axios = require("axios");
 // Initialise the admin with the credentials
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
+
 
 // Set up an instance of the DB
 const firestore = admin.firestore();
