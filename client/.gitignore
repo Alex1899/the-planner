@@ -10,6 +10,7 @@
 
 # production
 /build
+.env
 
 #netlify func
 /build-lambda

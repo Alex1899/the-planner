@@ -20,7 +20,7 @@ const stopMission = async (uid) => {
     });
     try {
       // stop timer
-      await axios.get(`https://theplanner1.herokuapp.com/api/stopTimer/${uid}`);
+      await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/stopTimer/${uid}`);
 
       return {
         statusCode: 200,

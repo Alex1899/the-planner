@@ -11,8 +11,15 @@ const Timer = ({ expiryTimestamp, myday }) => {
   const {
     currentUser: { id, displayName },
   } = useStateValue();
-  const { taskData, clearMyDay, setTodayResult, setUserTasks } =
-    useTasksState();
+  const {
+    taskData,
+    clearMyDay,
+    setTodayResult,
+    setUserTasks,
+    saveTimer,
+    getTimer,
+  } = useTasksState();
+  const time = getTimer() ? getTimer() : expiryTimestamp;
 
   const setResultIfOffline = () => {
     // if offline set today result
@@ -28,28 +35,33 @@ const Timer = ({ expiryTimestamp, myday }) => {
       };
 
       setTodayResult(id, { todayResult: result, tasks: myday });
-    } else { // just clear tasks 
+    } else {
+      // just clear tasks
       let newTasks = clearMyDay();
       setUserTasks({ ...taskData, tasks: newTasks });
     }
     console.log("myday cleared");
   };
-  
-  let time = new Date();
-  time.setSeconds(expiryTimestamp);
+
+  let date = new Date();
+  date.setSeconds(date.getSeconds() + time);
 
   const { seconds, minutes, hours } = useTimer({
-    expiryTimestamp: time,
+    expiryTimestamp: date,
     onExpire: () => setResultIfOffline(),
   });
 
   useEffect(() => {
+    let secs = hours*60*60 + minutes*60 + seconds
+
+    saveTimer(secs);
+
     if (hours === 1 && seconds === 59) {
       let message = `Hey, ${displayName}! You have less than 1 hour left to crush your tasks and get that juicy WIN! GET AFTER IT`;
       notifyUser(id, message);
       console.log("message sent");
     }
-  }, [hours, displayName, id, seconds]);
+  }, [hours, minutes, saveTimer, displayName, id, seconds]);
 
   return (
     <div className="timer">

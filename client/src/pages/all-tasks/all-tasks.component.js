@@ -5,7 +5,8 @@ import { getUserTasks } from "../../firebase/firebase.utils";
 import { Spinner } from "react-bootstrap";
 import DraggableList from "../../components/draggable-task/draggable-task.component";
 import AddTask from "../../components/add-task/add-task.component";
-import "./all-tasks.styles.scss"
+import "./all-tasks.styles.scss";
+import PageHeader from "../../components/page-header/page-header.component";
 const AllTasks = () => {
   const {
     currentUser: { id },
@@ -14,13 +15,18 @@ const AllTasks = () => {
   const { taskData } = useTasksState();
   const [spinner, toggleSpinner] = useState(false);
 
+  let myday =
+    taskData && taskData.tasks
+      ? taskData.tasks.filter((task) => task.addedToMyDay)
+      : [];
+
   useEffect(() => {
-      console.log("AllTasks rendered")
+    console.log("AllTasks rendered");
     if (taskData && taskData.tasks) {
       setTasks([...taskData.tasks]);
     } else {
       if (navigator.onLine) {
-          console.log("tasks fetching from firebase...")
+        console.log("tasks fetching from firebase...");
         toggleSpinner((_) => true);
         getUserTasks(id)
           .then((res) => {
@@ -50,12 +56,7 @@ const AllTasks = () => {
             backgroundImage: `url(/assets/big-screen-bg.jpg)`,
           }}
         >
-          <header>
-            <div className="header-div">
-              <img src="/assets/tasks.svg" alt="tasks" width={30} />
-              <p>Tasks</p>
-            </div>
-          </header>
+          <PageHeader title="Tasks" myday={myday} />
 
           {/* tasks div */}
           <DraggableList tasks={tasks} />

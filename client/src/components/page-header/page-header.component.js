@@ -5,11 +5,13 @@ import "./page-header.styles.scss";
 const PageHeader = ({ title, myday }) => {
 
   let obj = new Date();
-  let secs =
-    24 * 60 * 60 -
-    obj.getHours() * 60 * 60 -
-    obj.getMinutes() * 60 -
-    obj.getSeconds();
+  // let secs =
+  //   24 * 60 * 60 -
+  //   obj.getHours() * 60 * 60 -
+  //   obj.getMinutes() * 60 -
+  //   obj.getSeconds();
+  let secs = 60
+  
 
   return (
     <header>
@@ -25,6 +27,7 @@ const PageHeader = ({ title, myday }) => {
               style={{ marginRight: 10 }}
               src={`/assets/${title.toLowerCase()}.svg`}
               alt="icon"
+              width={30}
             />
             <p className="title">{title}</p>
           </div>

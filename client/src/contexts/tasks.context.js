@@ -39,9 +39,9 @@ const TaskProvider = ({ children }) => {
   };
 
   const updateSpecificTask = (userId, { taskId, update }) => {
-    console.log("update", update)
+    console.log("update", update);
     if ("addedToMyDay" in update) {
-      console.log("added to myday is in update")
+      console.log("added to myday is in update");
       if (update.addedToMyDay) {
         axios
           .get(`/.netlify/functions/startTimer?id=${userId}`)
@@ -50,7 +50,8 @@ const TaskProvider = ({ children }) => {
       } else {
         let mydayTasks = taskData.tasks.filter((task) => task.addedToMyDay);
         if (mydayTasks.length === 1) {
-          console.log("stopping timer...")
+          console.log("stopping timer...");
+          saveTimer(0);
           axios
             .get(`/.netlify/functions/stopTimer?id=${userId}`)
             .then((res) => console.log(res))
@@ -91,9 +92,18 @@ const TaskProvider = ({ children }) => {
   };
 
   const deleteTask = (userId, taskId) => {
+    let mydayTasks = taskData.tasks.filter((task) => task.addedToMyDay);
+  
     let tasksCopy = taskData;
     tasksCopy.tasks.some((task, i) => {
       if (task.id === taskId) {
+        if (mydayTasks.length === 1 && task.addedToMyDay) {
+          saveTimer(0)
+          axios
+          .get(`/.netlify/functions/stopTimer?id=${userId}`)
+          .then((res) => console.log(res))
+          .catch((e) => console.log(e));
+        }
         tasksCopy.tasks.splice(i, 1);
         return true;
       }
@@ -135,7 +145,22 @@ const TaskProvider = ({ children }) => {
         task.addedToMyDay = false;
       }
     });
+    saveTimer(0);
     return newTasks;
+  };
+
+  const saveTimer = (timeStamp) => {
+    localStorage.setItem("timeStamp", JSON.stringify(timeStamp));
+  };
+
+  const getTimer = () => {
+    let timeStamp = localStorage.getItem("timeStamp");
+    let time = JSON.parse(timeStamp);
+    if (time && time === 0) {
+      return null;
+    }
+
+    return time;
   };
 
   return (
@@ -150,6 +175,8 @@ const TaskProvider = ({ children }) => {
         clearMyDay,
         updateUserTasks,
         setExpiryTime,
+        saveTimer,
+        getTimer,
       }}
     >
       {children}

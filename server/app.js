@@ -33,11 +33,13 @@ app.post("/api/startTimer", (req, res, next) => {
 
   const time = moment().tz(timezone)
   console.log(time.format('HH:mm:ss'))
-  let secs =
-    24 * 60 * 60 -
-    time.hours() * 60 * 60 -
-    time.minutes() * 60 -
-    time.seconds();
+  // let secs =
+  //   24 * 60 * 60 -
+  //   time.hours() * 60 * 60 -
+  //   time.minutes() * 60 -
+  //   time.seconds();
+  let secs = 60
+
 
   console.log("received user", uid);
   console.log("timezone", timezone)
@@ -56,7 +58,7 @@ app.post("/api/startTimer", (req, res, next) => {
       console.log("timer expired! checking result....");
       axios
         .get(
-          `https://the-planner.netlify.app/.netlify/functions/checkResult?id=${uid}`
+          `${process.env.REACT_APP_URL}/.netlify/functions/checkResult?id=${uid}`
         )
         .then(() => console.log("result checked"))
         .catch((e) => console.log(e));
@@ -78,7 +80,7 @@ app.post("/api/startTimer", (req, res, next) => {
             clearInterval(interval);
           }
         });
-    }, 3600 * 1000);
+    }, 5 * 1000);
   });
 
   res.send({ data: "received" });
