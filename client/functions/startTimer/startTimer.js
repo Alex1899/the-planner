@@ -43,7 +43,7 @@ export async function handler(event) {
   if (res.res === "success") {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
-      await axios.post(`http://localhost:5000/api/startTimer`, {
+      await axios.post(`${process.env.REACT_APP_SERVER_URL}/api/startTimer`, {
         uid,
         timezone,
       });

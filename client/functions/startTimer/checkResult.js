@@ -42,11 +42,14 @@ const checkTodayResult = async (uid) => {
         onAmission: false,
       });
 
+      let docWrites = []
       mydayTasks.forEach(async (task) => {
-        await tasksRef.doc(task.id).update({
+        docWrites.push(tasksRef.doc(task.id).update({
           addedToMyDay: false,
-        });
+        }));
       });
+
+      await Promise.all(docWrites)
 
       return {
         statusCode: 200,
@@ -56,7 +59,7 @@ const checkTodayResult = async (uid) => {
       console.log(e);
       return {
         statusCode: 500,
-        body: JSON.stringify({ res: "error" }),
+        body: JSON.stringify({ res: e.message }),
       };
     }
   }
