@@ -60,7 +60,7 @@ app.post("/api/startTimer", (req, res, next) => {
         .get(
           `${process.env.REACT_APP_URL}/.netlify/functions/checkResult?id=${uid}`
         )
-        .then(() => console.log("result checked"))
+        .then((res) => console.log(res))
         .catch((e) => console.log(e));
     }, secondsLeft * 1000);
 

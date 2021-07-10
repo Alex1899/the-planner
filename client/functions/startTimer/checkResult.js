@@ -32,31 +32,28 @@ const checkTodayResult = async (uid) => {
         start: yesterday,
         end: yesterday,
       };
+      const batch = firestore.batch();
 
-      await userRef.collection("events").doc().set({
-        todayResult: result,
-        tasks: mydayTasks,
-      });
+      let newEventDoc = userRef.collection("events").doc();
+      batch.set(newEventDoc, { todayResult: result, tasks: mydayTasks });
 
-      await userRef.update({
-        onAmission: false,
-      });
+      batch.update(userRef, { onAmission: false });
 
-      let docWrites = []
       mydayTasks.forEach(async (task) => {
-        docWrites.push(tasksRef.doc(task.id).update({
-          addedToMyDay: false,
-        }));
+        let taskDoc = tasksRef.doc(task.id);
+        batch.update(taskDoc, { addedToMyDay: false });
       });
 
-      await Promise.all(docWrites)
+      await batch.commit()
+      console.log("batch completed successfully")
 
       return {
         statusCode: 200,
         body: JSON.stringify({ res: "success" }),
       };
     } catch (e) {
-      console.log(e);
+      console.log("error while reading firebase");
+      console.log(e.message);
       return {
         statusCode: 500,
         body: JSON.stringify({ res: e.message }),
@@ -64,19 +61,27 @@ const checkTodayResult = async (uid) => {
     }
   }
   return {
-      statusCode: 200,
-      body: JSON.stringify({res: "user is not on a mission"})
-  }
+    statusCode: 200,
+    body: JSON.stringify({ res: "user is not on a mission" }),
+  };
 };
 
 export async function handler(event) {
   let uid = event.queryStringParameters.id;
   console.log("checking result for user", uid);
 
-  let res = await checkTodayResult(uid);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(res),
-  };
+  try {
+    let res = await checkTodayResult(uid);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(res),
+    };
+  } catch (e) {
+    console.log("error during checking result");
+    console.log(e.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify(e.message),
+    };
+  }
 }
