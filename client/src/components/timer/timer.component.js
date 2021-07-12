@@ -7,7 +7,7 @@ import { useStateValue } from "../../contexts/auth.context";
 import "./timer.styles.scss";
 import { notifyUser } from "../../firebase/firebase.utils";
 
-const Timer = ({ expiryTimestamp, myday }) => {
+const Timer = ({ myday }) => {
   const {
     currentUser: { id, displayName },
   } = useStateValue();
@@ -17,9 +17,15 @@ const Timer = ({ expiryTimestamp, myday }) => {
     setTodayResult,
     setUserTasks,
     saveTimer,
-    getTimer,
   } = useTasksState();
-  const time = getTimer() ? getTimer() : expiryTimestamp;
+
+  let obj = new Date();
+  const time =
+    24 * 60 * 60 -
+    obj.getHours() * 60 * 60 -
+    obj.getMinutes() * 60 -
+    obj.getSeconds();
+
 
   const setResultIfOffline = () => {
     // if offline set today result
@@ -52,7 +58,7 @@ const Timer = ({ expiryTimestamp, myday }) => {
   });
 
   useEffect(() => {
-    let secs = hours*60*60 + minutes*60 + seconds
+    let secs = hours * 60 * 60 + minutes * 60 + seconds;
 
     saveTimer(secs);
 

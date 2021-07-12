@@ -16,7 +16,7 @@ const checkTodayResult = async (uid) => {
   let data = snap.data();
 
   if (data.onAmission) {
-    const tasksRef = userRef.collection(`tasks`);
+    const tasksRef = userRef.collection("tasks");
     try {
       let tasksSnapshot = await tasksRef
         .where("addedToMyDay", "==", true)
@@ -40,18 +40,14 @@ const checkTodayResult = async (uid) => {
 
       batch.update(userRef, { onAmission: false });
 
-      mydayTasks.forEach(async (task) => {
-        let taskDoc = tasksRef.doc(task.id);
-        batch.update(taskDoc, { addedToMyDay: false });
-      });
-
       await batch.commit();
       console.log("batch completed successfully");
 
-      return {
+      return [{
         statusCode: 200,
         body: JSON.stringify({ res: "success" }),
-      };
+      }, mydayTasks]
+
     } catch (e) {
       console.log("error while reading firebase");
       console.log(e.message);
@@ -67,12 +63,26 @@ const checkTodayResult = async (uid) => {
   };
 };
 
+const clearMyDay = async (uid, mydayTasks) => {
+  const tasksRef = firestore.collection(`users/${uid}/tasks`)
+  let batch = firestore.batch()
+
+  mydayTasks.forEach((task) => {
+    let taskDoc = tasksRef.doc(task.id);
+    batch.update(taskDoc, { addedToMyDay: false });
+  });
+
+  await batch.commit()
+}
+
 export async function handler(event) {
   let uid = event.queryStringParameters.id;
   console.log("checking result for user", uid);
 
   try {
-    let res = await checkTodayResult(uid);
+    let [res, mydayTasks] = await checkTodayResult(uid);
+    await clearMyDay(uid, mydayTasks)
+
     return {
       statusCode: 200,
       body: JSON.stringify(res),

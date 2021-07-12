@@ -4,23 +4,14 @@ import "./page-header.styles.scss";
 
 const PageHeader = ({ title, myday }) => {
 
-  let obj = new Date();
-  let secs =
-    24 * 60 * 60 -
-    obj.getHours() * 60 * 60 -
-    obj.getMinutes() * 60 -
-    obj.getSeconds();
-
-  
-
   return (
     <header>
       <div className="today">
         {title === "My Day" ? (
-          <>
+          <div className="d-flex flex-column">
             <p className="title">{title}</p>
             <p className="date">{new Date().toDateString()}</p>
-          </>
+          </div>
         ) : (
           <div className="d-flex align-items-center">
             <img
@@ -34,7 +25,7 @@ const PageHeader = ({ title, myday }) => {
         )}
       </div>
       {myday && myday.length > 0 && (
-        <Timer expiryTimestamp={secs} myday={myday} />
+        <Timer myday={myday} />
       )}
     </header>
   );

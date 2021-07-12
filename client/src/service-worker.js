@@ -21,6 +21,19 @@ clientsClaim();
 // even if you decide not to use precaching. See https://cra.link/PWA
 precacheAndRoute(self.__WB_MANIFEST);
 
+precacheAndRoute([
+  { url: "/assets/no-wifi.svg", revision: null },
+  { url: "/assets/menu.svg", revision: null },
+  { url: "/assets/checked.svg", revision: null },
+  { url: "/assets/unchecked.svg", revision: null },
+  { url: "/assets/completed.svg", revision: null },
+  { url: "/assets/left-arrow.svg", revision: null },
+  { url: "/assets/multiply.svg", revision: null },
+  { url: "/assets/sun-white.svg", revision: null },
+  { url: "/assets/delete.svg", revision: null },
+
+]);
+
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
 // https://developers.google.com/web/fundamentals/architecture/app-shell
@@ -50,7 +63,7 @@ registerRoute(
 // precache, in this case same-origin .png requests like those from in public/
 registerRoute(
   // Add in any other file extensions or routing criteria as needed.
-  ({url}) => url.pathname.startsWith('/assets/'),// Customize this strategy as needed, e.g., by changing to CacheFirst.
+  ({ url }) => url.pathname.startsWith("/assets/"), // Customize this strategy as needed, e.g., by changing to CacheFirst.
   new StaleWhileRevalidate({
     cacheName: "images",
     plugins: [
