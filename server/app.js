@@ -40,7 +40,6 @@ app.post("/api/startTimer", (req, res, next) => {
     time.seconds();
 
 
-
   console.log("received user", uid);
   console.log("timezone", timezone)
   console.log("time left in secs", secs)
