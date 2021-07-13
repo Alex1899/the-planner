@@ -62,7 +62,7 @@ const Timer = ({ myday }) => {
 
     saveTimer(secs);
 
-    if (hours === 1 && seconds === 59) {
+    if (hours === 1 && minutes === 59 && seconds === 59) {
       let message = `Hey, ${displayName}! You have less than 1 hour left to crush your tasks and get that juicy WIN! GET AFTER IT`;
       notifyUser(id, message);
       console.log("message sent");
